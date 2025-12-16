@@ -3,6 +3,7 @@ export const app = express()
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import { ErrorHandler } from './MiddleWare/ErrorHandler.js'
+import UserAuthRouter from './Routes/userAuth.route.js'
 
 app.use(cors({
     origin: process.env.FRONTEND_URL,
@@ -15,11 +16,7 @@ app.use(express.json({limit:'50mb'}))
 
 
 
-app.use((req,res)=>{
-    if(req.path.startsWith('/api/')){
-       return res.status(400).json({success:false,message:'API endpoint not found'})
-    }  
-})
+app.use('/api/v1/userAuth',UserAuthRouter)
 
 
 app.use(ErrorHandler)
