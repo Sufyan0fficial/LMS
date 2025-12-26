@@ -41,6 +41,8 @@ const userSchema:Schema<IUser> = new mongoose.Schema({
     },
     courses:[String]
 
+},{
+    timestamps:true
 })
 
 export const userModel:Model<IUser> = mongoose.model<IUser>('User',userSchema)
