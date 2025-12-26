@@ -13,7 +13,7 @@ import { redisClient } from "../Redis/init.redis.js";
 import cloudinary from "cloudinary";
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+export const __dirname = path.dirname(__filename);
 
 export const User_Registration = AsyncWrapper(async (req, res, next) => {
   const { name, email, password: pass } = req.body;
@@ -232,3 +232,40 @@ export const Update_Avatar = AsyncWrapper(async (req, res, next) => {
     })
   }
 });
+
+export const Get_All_Users = AsyncWrapper(async(req,res,next)=>{
+  const users = await userModel.find().sort({createdAt:-1})
+  return res.status(200).json({
+    success:true,
+    data:users
+  })
+})
+
+export const Update_User_Role= AsyncWrapper(async(req,res,next)=>{
+  const userId = req.params?.id
+  const userRole = req.body?.role
+  const updatedRoleUser = await userModel.findByIdAndUpdate(userId,{role:userRole},{new:true, runValidators:true})
+  console.log('issue is ',updatedRoleUser)
+  if(!updatedRoleUser){
+    return next(customError(400,'Failed to update User ROle'))
+  }
+  return res.status(201).json({
+    success:true,
+    message:'User role updated successfully',
+    data:updatedRoleUser
+  })
+})
+
+export const Delete_User = AsyncWrapper(async(req,res,next)=>{
+  const userId = req.params?.id
+  const userDeleted = await userModel.findByIdAndDelete(userId)
+  await redisClient.del(userId)
+  if(!userDeleted){
+    return next(customError(400,'Failed to delete requested User'))
+  }
+  return res.status(200).json({
+    success:true,
+    message:'User Deleted successfully'
+  })
+})
+
