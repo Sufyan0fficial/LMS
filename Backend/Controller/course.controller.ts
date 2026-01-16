@@ -98,7 +98,7 @@ export const Get_Single_Course = AsyncWrapper(
     } else {
       console.log("db hitting");
     const Course = await CourseModel.findById(id).select(
-      "-courseData.links -courseData.suggestion -courseData.questions -courseData.video.url"
+      "-courseData.data.link -courseData.data.suggestion -courseData.data.questions -courseData.data.url"
     );
     await redisClient.set(id, JSON.stringify(Course));
     return res.status(200).json({
@@ -123,7 +123,7 @@ export const Get_Courses = AsyncWrapper(async (req, res, next) =>
    else {
     console.log("db hitting");
   const Courses = await CourseModel.find().select(
-    "-courseData.links -courseData.suggestion -courseData.questions -courseData.video.url"
+    "-courseData.data.link -courseData.data.suggestion -courseData.data.questions -courseData.data.url"
   );
   await redisClient.set("allCourses", JSON.stringify(Courses));
   return res.status(200).json({
@@ -179,14 +179,18 @@ export const Ask_Question = AsyncWrapper(async (req, res, next) => {
   const updatedCourse = await CourseModel.findOneAndUpdate(
     {
       _id: courseId,
-      "courseData._id": contentId,
+      "courseData.data._id": contentId,
     },
     {
       $push: {
-        "courseData.$.questions": Question,
+        "courseData.$.data.$[elem].questions": Question,
       },
     },
-    { new: true, runValidators: true }
+    { 
+      new: true, 
+      runValidators: true,
+      arrayFilters: [{ "elem._id": contentId }]
+    }
   );
 
   if (!updatedCourse) {
@@ -196,9 +200,13 @@ export const Ask_Question = AsyncWrapper(async (req, res, next) => {
     });
   }
 
-  const courseContent = updatedCourse?.courseData.find(
-    (obj: any) => obj._id === contentId
-  ) as ICourseDataSchema;
+  const courseSection = updatedCourse?.courseData.find((section: any) => 
+    section.data.some((item: any) => item._id.toString() === contentId)
+  );
+  const courseContent = courseSection?.data.find((item: any) => 
+    item._id.toString() === contentId
+  );
+
   await NotificationModel.create({
     title: "New Question Asked",
     userId: user?._id,
@@ -217,10 +225,10 @@ export const Answer_Question = AsyncWrapper(async (req, res, next) => {
     return next(customError(400, "Required Id is missing"));
   }
   const Course = await CourseModel.findOneAndUpdate(
-    { _id: courseId, "courseData._id": contentId },
+    { _id: courseId, "courseData.data._id": contentId },
     {
       $push: {
-        "courseData.$.questions.$[q].answer": {
+        "courseData.$.data.$[elem].questions.$[q].answer": {
           answer,
           user: req.user,
           timeStamp: new Date(),
@@ -231,12 +239,12 @@ export const Answer_Question = AsyncWrapper(async (req, res, next) => {
       new: true,
       runValidators: true,
       arrayFilters: [
-        {
-          "q._id": questionId,
-        },
+        { "elem._id": contentId },
+        { "q._id": questionId }
       ],
     }
   );
+  
   const TargetedQuestion = await CourseModel.aggregate([
     {
       $match: {
@@ -247,26 +255,30 @@ export const Answer_Question = AsyncWrapper(async (req, res, next) => {
       $unwind: "$courseData",
     },
     {
-      $unwind: "$courseData.questions",
+      $unwind: "$courseData.data",
+    },
+    {
+      $unwind: "$courseData.data.questions",
     },
     {
       $match: {
-        "courseData.questions._id": new mongoose.Types.ObjectId(questionId),
+        "courseData.data.questions._id": new mongoose.Types.ObjectId(questionId),
       },
     },
     {
       $match: {
-        "courseData._id": new mongoose.Types.ObjectId(contentId),
+        "courseData.data._id": new mongoose.Types.ObjectId(contentId),
       },
     },
     {
       $project: {
-        data: "$courseData.questions",
-        courseContent: "$courseData",
+        data: "$courseData.data.questions",
+        courseContent: "$courseData.data",
         _id: 0,
       },
     },
   ]);
+  
   const targetQuestionData = TargetedQuestion[0]?.data;
   const emailTemplate = await ejs.renderFile(
     path.join(__dirname, "../Templates/NewAnswer.ejs"),

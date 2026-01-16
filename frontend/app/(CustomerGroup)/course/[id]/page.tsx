@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { GetSingleCourseApi } from "@/app/APIs/routes";
 import { ICourseData, IUser } from "@/app/types/apifn.types";
-import { Rate, Button, Spin } from "antd";
+import { Rate, Button, Spin, Collapse } from "antd";
 import {
   FaPlay,
   FaCheck,
@@ -13,6 +13,8 @@ import {
 } from "react-icons/fa";
 import { MdOutlineOndemandVideo } from "react-icons/md";
 import ReviewCard from "@/app/components/ReviewCard";
+
+const { Panel } = Collapse;
 import VideoPlayer from "@/app/components/AdminComponents/VideoPlayer";
 import { useSelector } from "react-redux";
 
@@ -127,7 +129,7 @@ const CourseDetails = ({ params }: { params: Promise<{ id: string }> }) => {
                 {course.preRequisits?.map((prerequisite, index) => (
                   <div key={index} className="flex items-start gap-3">
                     <FaCheck
-                      className="text-success mt-1 flex-shrink-0"
+                      className="text-success mt-1 shrink-0"
                       size={16}
                     />
                     <span className="text-secondary-light dark:text-secondary-dark">
@@ -143,30 +145,45 @@ const CourseDetails = ({ params }: { params: Promise<{ id: string }> }) => {
               <h2 className="text-xl font-semibold text-primary-light dark:text-primary-dark mb-4">
                 Course Overview
               </h2>
-              <div className="space-y-4">
-                {course.courseData?.map((lesson, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center gap-3 p-3 rounded-lg bg-section-light dark:bg-section-dark"
+              <Collapse 
+                className="bg-transparent"
+              >
+                {course.courseData?.map((section, sectionIndex) => (
+                  <Panel 
+                    key={sectionIndex}
+                    header={
+                      <div className="flex items-center gap-3">
+                        <span className="font-medium text-primary-light dark:text-primary-dark">
+                          {section.sectionName}
+                        </span>
+                        <span className="text-sm text-muted-light dark:text-muted-dark">
+                          ({section.data?.length || 0} lessons)
+                        </span>
+                      </div>
+                    }
+                    className="border-b border-border-light dark:border-border-dark last:border-b-0"
                   >
-                    <MdOutlineOndemandVideo
-                      className="text-bprimary"
-                      size={20}
-                    />
-                    <div className="flex-1">
-                      <h3 className="font-medium text-primary-light dark:text-primary-dark">
-                        {lesson.name}
-                      </h3>
-                      <p className="text-sm text-muted-light dark:text-muted-dark">
-                        {lesson.description}
-                      </p>
+                    <div className="space-y-3 pt-2">
+                      {section.data?.map((lesson, lessonIndex) => (
+                        <div key={lessonIndex} className="flex items-center gap-3 p-3 rounded-lg bg-section-light dark:bg-section-dark">
+                          <MdOutlineOndemandVideo className="text-bprimary" size={20} />
+                          <div className="flex-1">
+                            <h3 className="font-medium text-primary-light dark:text-primary-dark">
+                              {lesson.name}
+                            </h3>
+                            <p className="text-sm text-muted-light dark:text-muted-dark">
+                              {lesson.description}
+                            </p>
+                          </div>
+                          <span className="text-sm text-muted-light dark:text-muted-dark">
+                            {lesson.videoLength} min
+                          </span>
+                        </div>
+                      ))}
                     </div>
-                    <span className="text-sm text-muted-light dark:text-muted-dark">
-                      {lesson.videoLength} min
-                    </span>
-                  </div>
+                  </Panel>
                 ))}
-              </div>
+              </Collapse>
             </div>
 
             {/* Course Details */}

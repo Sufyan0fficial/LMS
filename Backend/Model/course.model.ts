@@ -1,94 +1,107 @@
 import mongoose, { Date, Document, Schema } from "mongoose";
 
 export interface ICourseDataSchema extends Document {
-    name:string,
-    description:string,
-    // video:{
-    //     thumbnail:{
-    //         public_id:string,
-    //         url:string
-    //     },
-    //     url:string,
-    //     section:string,
-    //     length:string,
+    sectionName:string,
+    data:{
 
-    // },
-    link:[
-        {
-            title:string,
-            url:string
-        }
-    ],
-    url:string,
-    suggestion:string[],
-    questions:[
-        {
-            user:object,
-            question:string,
-            answer:object[],
-            createdAt: Date
-
-        }
-    ],
-    videoLength:number
+        name:string,
+        description:string,
+        // video:{
+        //     thumbnail:{
+        //         public_id:string,
+        //         url:string
+        //     },
+        //     url:string,
+        //     section:string,
+        //     length:string,
+    
+        // },
+        link:[
+            {
+                title:string,
+                url:string
+            }
+        ],
+        url:string,
+        suggestion:string[],
+        questions:[
+            {
+                user:object,
+                question:string,
+                answer:object[],
+                createdAt: Date
+    
+            }
+        ],
+        videoLength:number
+    }[]
 
 }
 const CourseDataSchema = new Schema<ICourseDataSchema>({
-    name:{
+    sectionName:{
         type:String,
         required:true
     },
-    description:{
-        type:String,
-        required:true
-    },
-    // video:{
-    //     thumbnail:{
-    //         public_id:{
-    //             type:String
-    //         },
-    //         url:{
-    //             type:String
-    //         }
-    //     },
-    //     url:{
-    //         type:String
-    //     },
-    //     section:{
-    //         type:String
-    //     },
-    //     length:{
-    //         type:Number
-    //     },
-
-    // },
-    link:[
+    data:[
         {
-            title:{
-                type:String
-            },
-            url:{
-                type:String
-            }
-        }
-    ],
-    url:String,
-    suggestion:[String],
-    questions:[
-        {
-            user:Object,
-            question:{
-                type:String
-            },
-            answer:Array,
-            createdAt: {
-                type: Date,
-                default : Date.now
-            }
 
+            name:{
+                type:String,
+                required:true
+            },
+            description:{
+                type:String,
+                required:true
+            },
+            // video:{
+            //     thumbnail:{
+            //         public_id:{
+            //             type:String
+            //         },
+            //         url:{
+            //             type:String
+            //         }
+            //     },
+            //     url:{
+            //         type:String
+            //     },
+            //     section:{
+            //         type:String
+            //     },
+            //     length:{
+            //         type:Number
+            //     },
+        
+            // },
+            link:[
+                {
+                    title:{
+                        type:String
+                    },
+                    url:{
+                        type:String
+                    }
+                }
+            ],
+            url:String,
+            suggestion:[String],
+            questions:[
+                {
+                    user:Object,
+                    question:{
+                        type:String
+                    },
+                    answer:Array,
+                    createdAt: {
+                        type: Date,
+                        default : Date.now
+                    }
+        
+                }
+            ],
+            videoLength:String
         }
-    ],
-    videoLength:String
+    ]
     
 
 })
@@ -118,7 +131,7 @@ export interface ICourseSchema extends Document {
             reviewReplies:object[]
         }
     ],
-    courseData:object[],
+    courseData:ICourseDataSchema[],
     ratings:number
 
 

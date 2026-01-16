@@ -39,7 +39,7 @@ const CourseCard = ({ course }: { course: ICourseData }) => {
         <div className="capitalize text-bprimary">{course.level}</div>
         <div className="flex items-center gap-x-1">
           <VscThreeBars size={25} color="#f59e0b"/>
-          <span>{course.courseData?.length} Lessons</span>
+          <span>{course.courseData?.reduce((total, section) => total + (section.data?.length || 0), 0)} Lessons</span>
           
         </div>
       </div>

@@ -71,11 +71,14 @@ export type ICreateCoursePayload = {
   benefits: string[];
   preRequisits: string[];
   courseData: {
-    name: string;
-    description: string;
-    link: { title: string; url: string }[];
-    url: string;
-    videoLength:number
+    sectionName: string;
+    data: {
+      name: string;
+      description: string;
+      link: { title: string; url: string }[];
+      url: string;
+      videoLength: number;
+    }[];
   }[];
 };
 
@@ -120,14 +123,14 @@ const CreateCourse = () => {
   console.log("targeted delete index", indexOfSectionToDelete);
   const [CourseData, setCourseData] = useState([
     {
-      name: "Part 1",
+      sectionName: "",
       data: [
         {
           name: "UnNamed",
           description: "",
           link: [{ title: "", url: "" }],
           url: "",
-          videoLength:0
+          videoLength: 0,
         },
       ],
     },
@@ -149,11 +152,16 @@ const CreateCourse = () => {
       preRequisits: [""],
       courseData: [
         {
-          name: "",
-          description: "",
-          url: "",
-          link: [{ title: "", url: "" }],
-          videoLength:0
+          sectionName: "",
+          data: [
+            {
+              name: "",
+              description: "",
+              url: "",
+              link: [{ title: "", url: "" }],
+              videoLength: 0,
+            },
+          ],
         },
       ],
     });
@@ -192,10 +200,7 @@ const CreateCourse = () => {
           setTags(courseInformation.tags);
           setCourseBenefits(data.benefits);
           setCoursePrereq(data.preRequisits);
-          const courseContentData = CourseData.map((item, i) => {
-            return { ...item, data: data.courseData };
-          });
-          setCourseData(courseContentData);
+          setCourseData(data.courseData || []);
         }
       } catch (error) {
         if (axios.isAxiosError(error)) {
@@ -230,14 +235,14 @@ const CreateCourse = () => {
       });
       setCourseData([
         {
-          name: "Part 1",
+          sectionName: "",
           data: [
             {
               name: "UnNamed",
               description: "",
               link: [{ title: "", url: "" }],
               url: "",
-              videoLength:0
+              videoLength: 0,
             },
           ],
         },
@@ -255,11 +260,16 @@ const CreateCourse = () => {
         preRequisits: [""],
         courseData: [
           {
-            name: "",
-            description: "",
-            url: "",
-            link: [{ title: "", url: "" }],
-            videoLength:0
+            sectionName: "",
+            data: [
+              {
+                name: "",
+                description: "",
+                url: "",
+                link: [{ title: "", url: "" }],
+                videoLength: 0,
+              },
+            ],
           },
         ],
       });
@@ -390,14 +400,14 @@ const CreateCourse = () => {
     setCourseData((pre) => [
       ...pre,
       {
-        name: "Part 1",
+        sectionName: "",
         data: [
           {
             name: "UnNamed",
             description: "",
             link: [{ title: "", url: "" }],
             url: "",
-            videoLength:0
+            videoLength: 0,
           },
         ],
       },
@@ -415,7 +425,7 @@ const CreateCourse = () => {
   };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement >,
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     type: string,
     mainIndex: number,
     contentIndex?: number,
@@ -495,38 +505,36 @@ const CreateCourse = () => {
     if (CourseData.length === 0) {
       return messageApi.warning("Minimum One section is required");
     }
-       for(const course of CourseData) {
-          const currentCourse = course.data;
-          if (currentCourse.length === 0) {
-            return messageApi.warning(
-              "Minimum One Content Section is required"
-            );
-          }
-          for(const content of currentCourse){
-            if (!content.name) {
-              return messageApi.warning("Course Title is requried");
-            }
-            if (!content.description) {
-              return messageApi.warning("Course Description is requried");
-            }
-            if (!content.url) {
-              return messageApi.warning("Course URL is requried");
-            }
-            if (content.link?.length === 0) {
-              return messageApi.warning("Minimum one ourse link is required");
-            }
-            for(const link of content.link){
-              if (!link.title) {
-                return messageApi.warning("Link title is required");
-              }
-              if (!link.url) {
-                return messageApi.warning("Link URL is required");
-              }
-            };
-          };
-
-          setCurrentStep((pre) => pre + 1);
+    for (const course of CourseData) {
+      const currentCourse = course.data;
+      if (currentCourse.length === 0) {
+        return messageApi.warning("Minimum One Content Section is required");
+      }
+      for (const content of currentCourse) {
+        if (!content.name) {
+          return messageApi.warning("Course Title is requried");
         }
+        if (!content.description) {
+          return messageApi.warning("Course Description is requried");
+        }
+        if (!content.url) {
+          return messageApi.warning("Course URL is requried");
+        }
+        if (content.link?.length === 0) {
+          return messageApi.warning("Minimum one ourse link is required");
+        }
+        for (const link of content.link) {
+          if (!link.title) {
+            return messageApi.warning("Link title is required");
+          }
+          if (!link.url) {
+            return messageApi.warning("Link URL is required");
+          }
+        }
+      }
+
+      setCurrentStep((pre) => pre + 1);
+    }
 
     if (Object.keys(initialCourseInformation).length === 0) {
       setCurrentStep(0);
@@ -545,7 +553,7 @@ const CreateCourse = () => {
       ...initialCourseInformation,
       preRequisits: coursePrereq,
       benefits: courseBenifits,
-      courseData: CourseData.flatMap((item, i) => item.data),
+      courseData: CourseData,
     };
     setCreateCoursePayload(data);
     setCurrentStep(3);
@@ -894,7 +902,7 @@ const CreateCourse = () => {
                     className="px-4 md:px-10 py-6 bg-section-light dark:bg-card-dark border rounded-lg relative border-border-light dark:border-border-dark"
                   >
                     <div className="w-full flex items-start justify-between">
-                      <div className="mb-6 text-title">{item.name}</div>
+                      <div className="mb-6 text-title">{item.sectionName}</div>
                       <TiDeleteOutline
                         color="red"
                         size={30}
@@ -1198,7 +1206,7 @@ const CreateCourse = () => {
                                   description: "",
                                   link: [{ title: "", url: "" }],
                                   url: "",
-                                  videoLength:0
+                                  videoLength: 0,
                                 },
                               ],
                             };

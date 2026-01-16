@@ -27,35 +27,28 @@ export interface IUser {
 }
 
 export interface ICourseDataSchema {
-  name: string;
-  description: string;
-  // video:{
-  //     thumbnail:{
-  //         public_id:string,
-  //         url:string
-  //     },
-  //     url:string,
-  //     section:string,
-  //     length:string,
-
-  // },
-  link: [
-    {
-      title: string;
-      url: string;
-    }
-  ];
-  url: string;
-  suggestion: string[];
-  questions: [
-    {
-      user: object;
-      question: string;
-      answer: object[];
-      createdAt: Date;
-    }
-  ];
-  videoLength: number;
+  sectionName: string;
+  data: {
+    name: string;
+    description: string;
+    link: [
+      {
+        title: string;
+        url: string;
+      }
+    ];
+    url: string;
+    suggestion: string[];
+    questions: [
+      {
+        user: object;
+        question: string;
+        answer: object[];
+        createdAt: Date;
+      }
+    ];
+    videoLength: number;
+  }[];
 }
 
 export interface ICourseData {
