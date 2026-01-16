@@ -2,17 +2,38 @@ import { Rate } from "antd";
 import Image from "next/image";
 import React from "react";
 
-  const data = {
-    image:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cHJvZmlsZSUyMGltYWdlfGVufDB8fDB8fHww",
+interface ReviewCardProps {
+  review?: {
+    user: {
+      name?: string;
+      avatar?: {
+        url?: string;
+      };
+    };
+    comment: string;
+    rating: number;
+    createdAt?: Date;
+  };
+}
+
+const ReviewCard = ({ review }: ReviewCardProps) => {
+    console.log('review is',review)
+  const defaultData = {
+    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cHJvZmlsZSUyMGltYWdlfGVufDB8fDB8fHww",
     name: "Gene Batesjkllrkle",
-    comment:
-      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ducimus cum natus est explicabo vel perferendis perspiciatis blanditiis recusandae, minus maiores nostrum at officiis. Numquam iure error reiciendis? Vitae, cum culpa.",
+    comment: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ducimus cum natus est explicabo vel perferendis perspiciatis blanditiis recusandae, minus maiores nostrum at officiis.",
     rating: 4,
   };
-  const date = new Date();
 
-const ReviewCard = () => {
+  const data = review ? {
+    image: review.user?.avatar?.url || defaultData.image,
+    name: review.user?.name || defaultData.name,
+    comment: review.comment || defaultData.comment,
+    rating: review.rating || defaultData.rating,
+  } : defaultData;
+
+  const date = review?.createdAt ? new Date(review.createdAt) : new Date();
+
   return (
     <div>
       <div

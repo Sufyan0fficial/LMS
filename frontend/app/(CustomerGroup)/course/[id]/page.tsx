@@ -12,6 +12,7 @@ import {
   FaLifeRing,
 } from "react-icons/fa";
 import { MdOutlineOndemandVideo } from "react-icons/md";
+import ReviewCard from "@/app/components/ReviewCard";
 import VideoPlayer from "@/app/components/AdminComponents/VideoPlayer";
 import { useSelector } from "react-redux";
 
@@ -177,6 +178,8 @@ const CourseDetails = ({ params }: { params: Promise<{ id: string }> }) => {
                 {course.description}
               </p>
             </div>
+
+            
           </div>
 
           {/* Right Sidebar */}
@@ -247,6 +250,20 @@ const CourseDetails = ({ params }: { params: Promise<{ id: string }> }) => {
             </div>
           </div>
         </div>
+        {/* Reviews Section */}
+            {course.reviews && (
+              <div className="bg-card-light dark:bg-card-dark rounded-lg p-6 border border-border-light dark:border-border-dark mt-10">
+                <h2 className="text-xl font-semibold text-accent mb-6 ">
+                  Student Reviews ({course.reviews.length})
+                </h2>
+                <div className="grid grid-cols-1 gap-4">
+                  {course.reviews.map((review, index) => (
+                    <ReviewCard key={index} review={review} />
+                  ))}
+                </div>
+              </div>
+            )
+            }
       </div>
     </div>
   );
