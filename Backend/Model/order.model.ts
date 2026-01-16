@@ -10,11 +10,13 @@ export interface IorderSchema extends Document {
 const orderSchema = new Schema<IorderSchema>({
     courseId:{
         type:String,
-        required:true
+        required:true,
+        ref:'Course'
     },
     userId:{
         type:String,
-        required:true
+        required:true,
+        ref:'User'
     },
     payment_info:{
         type:Object,

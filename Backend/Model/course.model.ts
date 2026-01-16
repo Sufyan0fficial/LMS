@@ -3,22 +3,23 @@ import mongoose, { Date, Document, Schema } from "mongoose";
 export interface ICourseDataSchema extends Document {
     name:string,
     description:string,
-    video:{
-        thumbnail:{
-            public_id:string,
-            url:string
-        },
-        url:string,
-        section:string,
-        length:string,
+    // video:{
+    //     thumbnail:{
+    //         public_id:string,
+    //         url:string
+    //     },
+    //     url:string,
+    //     section:string,
+    //     length:string,
 
-    },
-    links:[
+    // },
+    link:[
         {
             title:string,
             url:string
         }
     ],
+    url:string,
     suggestion:string[],
     questions:[
         {
@@ -28,7 +29,8 @@ export interface ICourseDataSchema extends Document {
             createdAt: Date
 
         }
-    ]
+    ],
+    videoLength:number
 
 }
 const CourseDataSchema = new Schema<ICourseDataSchema>({
@@ -40,27 +42,27 @@ const CourseDataSchema = new Schema<ICourseDataSchema>({
         type:String,
         required:true
     },
-    video:{
-        thumbnail:{
-            public_id:{
-                type:String
-            },
-            url:{
-                type:String
-            }
-        },
-        url:{
-            type:String
-        },
-        section:{
-            type:String
-        },
-        length:{
-            type:Number
-        },
+    // video:{
+    //     thumbnail:{
+    //         public_id:{
+    //             type:String
+    //         },
+    //         url:{
+    //             type:String
+    //         }
+    //     },
+    //     url:{
+    //         type:String
+    //     },
+    //     section:{
+    //         type:String
+    //     },
+    //     length:{
+    //         type:Number
+    //     },
 
-    },
-    links:[
+    // },
+    link:[
         {
             title:{
                 type:String
@@ -70,6 +72,7 @@ const CourseDataSchema = new Schema<ICourseDataSchema>({
             }
         }
     ],
+    url:String,
     suggestion:[String],
     questions:[
         {
@@ -84,7 +87,9 @@ const CourseDataSchema = new Schema<ICourseDataSchema>({
             }
 
         }
-    ]
+    ],
+    videoLength:String
+    
 
 })
 
@@ -99,6 +104,7 @@ export interface ICourseSchema extends Document {
     },
     tags:string[],
     level:string,
+    category:string,
     demoUrl:string,
     benefits:string[],
     preRequisits:string[],
@@ -148,6 +154,9 @@ const CourseSchema = new Schema<ICourseSchema>({
     level:{
         type:String
     },
+    category:{
+        type:String
+    },
     demoUrl:{
         type:String
     },
@@ -158,7 +167,8 @@ const CourseSchema = new Schema<ICourseSchema>({
         type:[String]
     },
     purchased:{
-        type:Number
+        type:Number,
+        default:0
     },
     reviews:[
         {
@@ -182,7 +192,8 @@ const CourseSchema = new Schema<ICourseSchema>({
         CourseDataSchema
     ],
     ratings:{
-        type:Number
+        type:Number,
+        default:0
     }
 
 
@@ -190,5 +201,5 @@ const CourseSchema = new Schema<ICourseSchema>({
     timestamps:true
 })
 
-export const CourseModel = mongoose.model('Course',CourseSchema)
+export const CourseModel = mongoose.model<ICourseSchema>('Course',CourseSchema)
 

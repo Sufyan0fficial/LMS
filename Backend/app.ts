@@ -12,8 +12,8 @@ import LayoutRouter from './Routes/layout.route.js'
 
 
 app.use(cors({
-    origin: process.env.FRONTEND_URL,
-    credentials:true
+    origin: [`${process.env.FRONTEND_URL}`,'http://192.168.100.12:3001'],
+    credentials:true    
 }))
 
 app.use(cookieParser())

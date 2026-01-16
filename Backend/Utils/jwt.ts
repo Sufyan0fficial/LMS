@@ -22,14 +22,14 @@ export const SendCookie = (user:IUser,statusCode:number,res:Response, flag?:bool
     const accessTokenOptions:CookieOptions = {
         maxAge : accessTokenExpires,
         httpOnly : true,
-        secure : process.env.NODE_ENV === 'production',
-        sameSite:'lax'
+        // secure : process.env.NODE_ENV === 'production',
+        // sameSite:'lax'
     }
     const refreshTokenOptions:CookieOptions = {
         maxAge : refreshTokenExpires,
         httpOnly : true,
-        secure : process.env.NODE_ENV === 'production',
-        sameSite:'lax'
+        // secure : process.env.NODE_ENV === 'production',
+        // sameSite:'lax'
     }
 
     res.cookie('access_token',access_Token,accessTokenOptions)

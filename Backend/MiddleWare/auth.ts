@@ -1,13 +1,13 @@
     import { customError } from "../Utils/customError.js";
     import { AsyncWrapper } from "./AsyncWrapper.js";
     import jwt from 'jsonwebtoken'
-    import dotenv from 'dotenv'
     import { redisClient } from "../Redis/init.redis.js";
     import { NextFunction } from "express";
     import { Request, Response } from "express";
 
     export const Verify_User = AsyncWrapper(async(req,res,next)=>{
         const cookie = req.cookies?.access_token
+        console.log('access token is',cookie)
         if(!cookie){
             return next(customError(401,'Cookie Expired !'))
         }

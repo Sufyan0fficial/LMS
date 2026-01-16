@@ -1,5 +1,9 @@
 import { AsyncWrapper } from "../MiddleWare/AsyncWrapper.js";
-import { CourseModel, ICourseDataSchema, ICourseSchema } from "../Model/course.model.js";
+import {
+  CourseModel,
+  ICourseDataSchema,
+  ICourseSchema,
+} from "../Model/course.model.js";
 import cloudinary from "cloudinary";
 import { customError } from "../Utils/customError.js";
 import { redisClient } from "../Redis/init.redis.js";
@@ -9,36 +13,41 @@ import path from "path";
 import ejs from "ejs";
 import { sendMail } from "../Utils/sendActivationEmail.js";
 import { NotificationModel } from "../Model/notification.model.js";
+import axios from "axios";
 
 export const Upload_Course = AsyncWrapper(async (req, res, next) => {
   const courseData = req?.body;
   const thumbnail = req.body?.thumbnail;
-  if (!thumbnail?.public_id) {
     const Cloud = await cloudinary.v2.uploader.upload(thumbnail, {
       folder: "courses",
     });
-    courseData.thumbnail.public_id = Cloud.public_id;
-    courseData.thumbnail.url = Cloud.secure_url;
+    courseData.thumbnail = {
+      public_id: Cloud.public_id,
+      url: Cloud.secure_url,
   }
-  await CourseModel.create(courseData);
+  const response = await CourseModel.create(courseData);
   return res.status(200).json({
     message: "Course Uploaded successfully",
     success: true,
+    data: response,
   });
 });
 
 export const Edit_Course = AsyncWrapper(async (req, res, next) => {
   const id = req.params?.id;
   console.log("id is", id);
-  const RequestedChanges = req.body;
-  const thumbnail = req.body.thumbnail;
+  let RequestedChanges = req.body;
+  const thumbnail = req.body?.thumbnail;
+  if (!thumbnail) {
+    delete RequestedChanges.thumbnail;
+  }
   console.log("hi");
   const isCourseAvailable = await CourseModel.findOne({ _id: id });
   console.log("course is", isCourseAvailable);
   if (!isCourseAvailable) {
     return next(customError(400, "Course does not exist"));
   }
-  if (isCourseAvailable?.thumbnail.public_id) {
+  if (thumbnail && isCourseAvailable?.thumbnail.public_id) {
     cloudinary.v2.uploader.destroy(isCourseAvailable?.thumbnail.public_id);
     const cloud = await cloudinary.v2.uploader.upload(thumbnail, {
       folder: "courses",
@@ -47,7 +56,8 @@ export const Edit_Course = AsyncWrapper(async (req, res, next) => {
       public_id: cloud.public_id,
       url: cloud.secure_url,
     };
-  } else {
+  }
+  if (thumbnail && !isCourseAvailable?.thumbnail.public_id) {
     const cloud = await cloudinary.v2.uploader.upload(thumbnail, {
       folder: "courses",
     });
@@ -56,6 +66,7 @@ export const Edit_Course = AsyncWrapper(async (req, res, next) => {
       url: cloud.secure_url,
     };
   }
+
   const updatedCourse = await CourseModel.findByIdAndUpdate(
     id,
     RequestedChanges,
@@ -68,18 +79,24 @@ export const Edit_Course = AsyncWrapper(async (req, res, next) => {
   });
 });
 
-export const Get_Single_Course = AsyncWrapper(async (req, res, next) => {
-  const id = req.params?.id;
-  const isRedisAvailable = (await redisClient.get(id)) as any;
-  const parsedData = JSON.parse(isRedisAvailable);
-  if (Object.keys(parsedData).length > 0) {
-    console.log("redis hitting");
-    return res.status(200).json({
-      data: parsedData,
-      success: true,
-    });
-  } else {
-    console.log("db hitting");
+export const Get_Single_Course = AsyncWrapper(
+  async (req, res, next) => {
+    const id = req.params?.id;
+    if (!id) {
+      return next(customError(400, "Failed to fetch requested Course"));
+    }
+    const isRedisAvailable = (await redisClient.get(id)) as any;
+    if (isRedisAvailable) {
+      const parsedData = JSON.parse(isRedisAvailable);
+      if (Object.keys(parsedData).length > 0) {
+        console.log("redis hitting");
+        return res.status(200).json({
+          data: parsedData,
+          success: true,
+        });
+      }
+    } else {
+      console.log("db hitting");
     const Course = await CourseModel.findById(id).select(
       "-courseData.links -courseData.suggestion -courseData.questions -courseData.video.url"
     );
@@ -89,9 +106,11 @@ export const Get_Single_Course = AsyncWrapper(async (req, res, next) => {
       success: true,
     });
   }
-});
+  }
+);
 
-export const Get_Courses = AsyncWrapper(async (req, res, next) => {
+export const Get_Courses = AsyncWrapper(async (req, res, next) => 
+  {
   const isRedisAvailable = (await redisClient.get("allCourses")) as any;
   const parsedData = JSON.parse(isRedisAvailable);
   if (parsedData?.length > 0) {
@@ -100,18 +119,18 @@ export const Get_Courses = AsyncWrapper(async (req, res, next) => {
       data: parsedData,
       success: true,
     });
-  } else {
-    console.log("db hitting");
-    const Courses = await CourseModel.find().select(
-      "-courseData.links -courseData.suggestion -courseData.questions -courseData.video.url"
-    );
-    await redisClient.set("allCourses", JSON.stringify(Courses));
-    return res.status(200).json({
-      data: Courses,
-      success: true,
-    });
   }
-});
+   else {
+    console.log("db hitting");
+  const Courses = await CourseModel.find().select(
+    "-courseData.links -courseData.suggestion -courseData.questions -courseData.video.url"
+  );
+  await redisClient.set("allCourses", JSON.stringify(Courses));
+  return res.status(200).json({
+    data: Courses,
+    success: true,
+  });
+  }})
 
 export const Access_Course_Content = AsyncWrapper(async (req, res, next) => {
   const courseId = req.params?.id;
@@ -177,14 +196,14 @@ export const Ask_Question = AsyncWrapper(async (req, res, next) => {
     });
   }
 
-  const courseContent = updatedCourse?.courseData.find((obj:any)=>obj._id === contentId) as ICourseDataSchema
-  await NotificationModel.create(
-    {
-      title:'New Question Asked',
-      userId:user?._id,
-      message:`${user?.name} just asked a new question about ${courseContent?.name}`
-    }
-  )
+  const courseContent = updatedCourse?.courseData.find(
+    (obj: any) => obj._id === contentId
+  ) as ICourseDataSchema;
+  await NotificationModel.create({
+    title: "New Question Asked",
+    userId: user?._id,
+    message: `${user?.name} just asked a new question about ${courseContent?.name}`,
+  });
   res.status(200).json({
     success: true,
     message: "Question added successfully",
@@ -378,27 +397,44 @@ export const Reply_Review = AsyncWrapper(async (req, res, next) => {
   });
 });
 
-export const Get_All_Courses = AsyncWrapper(async(req,res,next)=>{
-  const courses = await CourseModel.find().sort({createdAt:-1})
+export const Get_All_Courses = AsyncWrapper(async (req, res, next) => {
+  const courses = await CourseModel.find().sort({ createdAt: -1 });
   return res.status(200).json({
-    success:true,
-    data:courses
-  })
-})
+    success: true,
+    data: courses,
+  });
+});
 
-export const Delete_Course = AsyncWrapper(async(req,res,next)=>{
-  const courseId = req.params?.id
-  console.log('course id is',courseId)
-  const courseDeleted = await CourseModel.findByIdAndDelete(courseId)
-  await redisClient.del(courseId)
-  if(!courseDeleted){
-    return next(customError(400,'Failed to delete requested Course'))
+export const Delete_Course = AsyncWrapper(async (req, res, next) => {
+  const courseId = req.params?.id;
+  console.log("course id is", courseId);
+  const courseDeleted = await CourseModel.findByIdAndDelete(courseId);
+  await redisClient.del(courseId);
+  if (!courseDeleted) {
+    return next(customError(400, "Failed to delete requested Course"));
   }
+  const courses = await CourseModel.find({});
   return res.status(200).json({
-    success:true,
-    message:'Course Deleted successfully'
-  })
-})
+    success: true,
+    message: "Course Deleted successfully",
+    data: courses,
+  });
+});
 
-
-
+export const VdoCipher_Video_Data = AsyncWrapper(async (req, res, next) => {
+  const { videoUrl } = req.body;
+  const response = await axios.post(
+    `https://dev.vdocipher.com/api/videos/${videoUrl}/otp`,
+    { ttl: 300 },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Apisecret ${process.env.VDOCIPHER_API_SECRETS}`,
+      },
+    }
+  );
+  if (!response.data) {
+    return next(customError(400, "Failed to fetch Requested Video"));
+  }
+  return res.status(200).json({ success: true, data: response.data });
+});

@@ -54,7 +54,7 @@ export const Update_Layout = AsyncWrapper(async (req, res, next) => {
       "banner.subtitle": string;
     
     }> = {};
-    if (image) {
+    if (image && imageData?.banner?.image?.public_id) {
         console.log('hi')
       await cloudinary.v2.uploader.destroy(
         imageData?.banner?.image?.public_id as string
@@ -86,7 +86,7 @@ export const Update_Layout = AsyncWrapper(async (req, res, next) => {
     data = await LayoutModel.findOneAndUpdate(
       { type: "category" },
       {
-        $push: {
+        $set: {
           category: category,
         },
       },
@@ -98,7 +98,7 @@ export const Update_Layout = AsyncWrapper(async (req, res, next) => {
     data = await LayoutModel.findOneAndUpdate(
       { type: "faq" },
       {
-        $push: {
+        $set: {
           faq: faq,
         },
       },
@@ -115,7 +115,7 @@ export const Update_Layout = AsyncWrapper(async (req, res, next) => {
 export const Get_LayoutBy_Type = AsyncWrapper(async(req,res,next)=>{
     const {type} = req.body
     const Layout = await LayoutModel.findOne({type})
-    if(Layout){
+    if(!Layout){
         return next(customError(400,'Failed to get Layout'))
     }
     return res.status(200).json({
