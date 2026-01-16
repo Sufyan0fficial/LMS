@@ -40,7 +40,7 @@ const Courses = () => {
             courses?.length > 0 ? 
             courses.map((item,i)=>{
               return (
-                <div key={i} onClick={()=>router.push('/course/hello')}>
+                <div key={i} onClick={()=>router.push(`/course/${item?._id}`)}>
                   <CourseCard course={item}/>
                 </div>
               )

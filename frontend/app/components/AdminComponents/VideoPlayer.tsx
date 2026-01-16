@@ -23,11 +23,11 @@ const VideoPlayer = ({ demoUrl }: { demoUrl: string }) => {
     getDemoVideo();
   }, []);
   return (
-    <div className="w-full border dark:border-border-dark border-border-light">
+    <div className="w-full border dark:border-border-dark border-border-light h-full!">
       {contextHolder}
       <iframe
         src={`https://player.vdocipher.com/v2/?otp=${videoData.otp}&playbackInfo=${videoData.playbackInfo}`}
-        className="w-full h-101.25 lg:w-180"
+        className="w-full h-full"
         allow="encrypted-media"
       ></iframe>
     </div>
