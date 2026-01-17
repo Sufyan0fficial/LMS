@@ -85,15 +85,15 @@ const CourseDetails = ({ params }: { params: Promise<{ id: string }> }) => {
           {/* Left Content */}
           <div className="lg:col-span-2 space-y-8">
             {/* Course Header */}
-            <div className="bg-card-light dark:bg-bprimary rounded-lg p-6 border border-border-light dark:border-border-dark">
-              <h1 className="text-2xl md:text-3xl font-bold text-primary-light dark:text-primary-dark mb-4">
+            <div className="bg-bprimary rounded-lg p-6 border border-border-light dark:border-border-dark">
+              <h1 className="text-2xl md:text-3xl font-bold text-primary-dark mb-4">
                 {course.name}
               </h1>
 
               <div className="flex flex-wrap items-center gap-4 mb-4 justify-between">
                 <div className="flex items-center gap-4">
                   <Rate disabled value={course.ratings} size="small" />
-                  <span className="text-secondary-light dark:text-secondary-dark">
+                  <span className="text-secondary-dark">
                     {course.reviews?.length || 0} Reviews
                   </span>
                 </div>
@@ -128,10 +128,7 @@ const CourseDetails = ({ params }: { params: Promise<{ id: string }> }) => {
               <div className="space-y-3">
                 {course.preRequisits?.map((prerequisite, index) => (
                   <div key={index} className="flex items-start gap-3">
-                    <FaCheck
-                      className="text-success mt-1 shrink-0"
-                      size={16}
-                    />
+                    <FaCheck className="text-success mt-1 shrink-0" size={16} />
                     <span className="text-secondary-light dark:text-secondary-dark">
                       {prerequisite}
                     </span>
@@ -145,39 +142,45 @@ const CourseDetails = ({ params }: { params: Promise<{ id: string }> }) => {
               <h2 className="text-xl font-semibold text-primary-light dark:text-primary-dark mb-4">
                 Course Overview
               </h2>
-              <Collapse 
-                className="bg-transparent"
-              >
+              <Collapse className="bg-transparent" accordion>
                 {course.courseData?.map((section, sectionIndex) => (
-                  <Panel 
+                  <Panel
                     key={sectionIndex}
                     header={
-                      <div className="flex items-center gap-3">
-                        <span className="font-medium text-primary-light dark:text-primary-dark">
+                      <div className="flex items-start gap-6">
+                        <span className="font-medium text-bprimary">
                           {section.sectionName}
                         </span>
-                        <span className="text-sm text-muted-light dark:text-muted-dark">
-                          ({section.data?.length || 0} lessons)
+                        <span className="text-xs md:text-sm text-nowrap mt-1 md:mt-0  text-accent">
+                          ({section.data?.length || 0} Videos)
                         </span>
                       </div>
                     }
                     className="border-b border-border-light dark:border-border-dark last:border-b-0"
                   >
-                    <div className="space-y-3 pt-2">
+                    <div className="space-y-3 pt-2  max-h-60 lg:max-h-72 overflow-y-auto ">
                       {section.data?.map((lesson, lessonIndex) => (
-                        <div key={lessonIndex} className="flex items-center gap-3 p-3 rounded-lg bg-section-light dark:bg-section-dark">
-                          <MdOutlineOndemandVideo className="text-bprimary" size={20} />
-                          <div className="flex-1">
-                            <h3 className="font-medium text-primary-light dark:text-primary-dark">
-                              {lesson.name}
-                            </h3>
-                            <p className="text-sm text-muted-light dark:text-muted-dark">
-                              {lesson.description}
-                            </p>
+                        <div
+                          key={lessonIndex}
+                          className="p-6 rounded-lg bg-section-light dark:bg-section-dark flex flex-col gap-y-2"
+                        >
+                          <div className="flex items-start gap-3 md:gap-4">
+                            <MdOutlineOndemandVideo
+                              className="text-bprimary mt-0.5"
+                              size={20}
+                            />
+                            <div className="flex-1">
+                              <h3 className="font-medium text-primary-light dark:text-primary-dark">
+                                {lesson.name}
+                              </h3>
+                            </div>
+                            <span className="text-sm text-success">
+                              {lesson.videoLength} min
+                            </span>
                           </div>
-                          <span className="text-sm text-muted-light dark:text-muted-dark">
-                            {lesson.videoLength} min
-                          </span>
+                          <p className="text-sm text-muted-light dark:text-muted-dark">
+                            {lesson.description}
+                          </p>
                         </div>
                       ))}
                     </div>
@@ -195,8 +198,6 @@ const CourseDetails = ({ params }: { params: Promise<{ id: string }> }) => {
                 {course.description}
               </p>
             </div>
-
-            
           </div>
 
           {/* Right Sidebar */}
@@ -215,8 +216,8 @@ const CourseDetails = ({ params }: { params: Promise<{ id: string }> }) => {
               <div className="bg-card-light dark:bg-card-dark rounded-lg p-6 border border-border-light dark:border-border-dark">
                 {isEnrolled ? (
                   <span className="text-3xl font-bold text-primary-light dark:text-primary-dark">
-                      Enrolled
-                    </span>
+                    Enrolled
+                  </span>
                 ) : (
                   <div className="flex items-center gap-3 mb-4">
                     <span className="text-3xl font-bold text-primary-light dark:text-primary-dark">
@@ -268,19 +269,18 @@ const CourseDetails = ({ params }: { params: Promise<{ id: string }> }) => {
           </div>
         </div>
         {/* Reviews Section */}
-            {course.reviews && (
-              <div className="bg-card-light dark:bg-card-dark rounded-lg p-6 border border-border-light dark:border-border-dark mt-10">
-                <h2 className="text-xl font-semibold text-accent mb-6 ">
-                  Student Reviews ({course.reviews.length})
-                </h2>
-                <div className="grid grid-cols-1 gap-4">
-                  {course.reviews.map((review, index) => (
-                    <ReviewCard key={index} review={review} />
-                  ))}
-                </div>
-              </div>
-            )
-            }
+        {course.reviews && (
+          <div className="bg-card-light dark:bg-card-dark rounded-lg p-6 border border-border-light dark:border-border-dark mt-10">
+            <h2 className="text-xl font-semibold text-accent mb-6 ">
+              Student Reviews ({course.reviews.length})
+            </h2>
+            <div className="grid grid-cols-1 gap-4">
+              {course.reviews.map((review, index) => (
+                <ReviewCard key={index} review={review} />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

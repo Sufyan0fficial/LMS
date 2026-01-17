@@ -27,6 +27,7 @@ import {
   MdDeleteOutline,
   MdOutlineAddLink,
   MdUpload,
+  MdEdit,
 } from "react-icons/md";
 import { useSelector } from "react-redux";
 import { div, input } from "motion/react-client";
@@ -119,6 +120,9 @@ const CreateCourse = () => {
   console.log("course prereq are", coursePrereq);
   const [messageApi, contextHolder] = message.useMessage();
   const [sectionDeleteDialog, setSectionDeleteDialog] = useState(false);
+  const [editingSectionIndex, setEditingSectionIndex] = useState<number | null>(
+    null
+  );
   const [indexOfSectionToDelete, setIndexOfSectionToDelete] = useState(0);
   console.log("targeted delete index", indexOfSectionToDelete);
   const [CourseData, setCourseData] = useState([
@@ -414,6 +418,15 @@ const CreateCourse = () => {
     ]);
   };
 
+  const handleSectionNameUpdate = (sectionIndex: number, newName: string) => {
+    const updatedData = CourseData.map((section, index) => {
+      if (index === sectionIndex) {
+        return { ...section, sectionName: newName };
+      }
+      return section;
+    });
+    setCourseData(updatedData);
+  };
   const handleDeleteSection = () => {
     setSectionDeleteDialog(false);
     if (!indexOfSectionToDelete) return;
@@ -506,6 +519,9 @@ const CreateCourse = () => {
       return messageApi.warning("Minimum One section is required");
     }
     for (const course of CourseData) {
+      if (!course.sectionName || course.sectionName.trim() === "") {
+        return messageApi.warning("Section name is required");
+      }
       const currentCourse = course.data;
       if (currentCourse.length === 0) {
         return messageApi.warning("Minimum One Content Section is required");
@@ -902,7 +918,33 @@ const CreateCourse = () => {
                     className="px-4 md:px-10 py-6 bg-section-light dark:bg-card-dark border rounded-lg relative border-border-light dark:border-border-dark"
                   >
                     <div className="w-full flex items-start justify-between">
-                      <div className="mb-6 text-title">{item.sectionName}</div>
+                      <div className="mb-6 flex items-center gap-3 flex-1">
+                        {editingSectionIndex === index ? (
+                          <Input
+                            value={item.sectionName}
+                            onChange={(e) =>
+                              handleSectionNameUpdate(index, e.target.value)
+                            }
+                            onBlur={() => setEditingSectionIndex(null)}
+                            onPressEnter={() => setEditingSectionIndex(null)}
+                            placeholder="Enter section name"
+                            className="text-title font-semibold border-bprimary"
+                            autoFocus
+                            required
+                          />
+                        ) : (
+                          <div className="flex items-center gap-2 flex-1">
+                            <span className="text-title font-semibold">
+                              {item.sectionName || "Untitled Section"}
+                            </span>
+                            <MdEdit
+                              size={18}
+                              className="text-bprimary cursor-pointer hover:text-bprimary-hover"
+                              onClick={() => setEditingSectionIndex(index)}
+                            />
+                          </div>
+                        )}
+                      </div>
                       <TiDeleteOutline
                         color="red"
                         size={30}
@@ -1272,7 +1314,10 @@ const CreateCourse = () => {
         </div>
       ) : CurrentStep === 3 ? (
         <div className="w-full mb-20 lg:text-lg flex flex-col gap-y-6 text-primary-light dark:text-primary-dark">
+          <div className="aspect-video">
+
           <VideoPlayer demoUrl={createCoursePayload.demoUrl} />
+          </div>
           <div className="flex gap-3 items-center">
             <div className="text-lg lg:text-xl font-bold">
               {createCoursePayload.price === 0

@@ -85,28 +85,29 @@ export const Get_Single_Course = AsyncWrapper(
     if (!id) {
       return next(customError(400, "Failed to fetch requested Course"));
     }
-    const isRedisAvailable = (await redisClient.get(id)) as any;
-    if (isRedisAvailable) {
-      const parsedData = JSON.parse(isRedisAvailable);
-      if (Object.keys(parsedData).length > 0) {
-        console.log("redis hitting");
-        return res.status(200).json({
-          data: parsedData,
-          success: true,
-        });
-      }
-    } else {
+    // const isRedisAvailable = (await redisClient.get(id)) as any;
+    // if (isRedisAvailable) {
+    //   const parsedData = JSON.parse(isRedisAvailable);
+    //   if (Object.keys(parsedData).length > 0) {
+    //     console.log("redis hitting");
+    //     return res.status(200).json({
+    //       data: parsedData,
+    //       success: true,
+    //     });
+    //   }
+    // } 
+    // else {
       console.log("db hitting");
     const Course = await CourseModel.findById(id).select(
-      "-courseData.data.link -courseData.data.suggestion -courseData.data.questions -courseData.data.url"
+      "-courseData.data.suggestion -courseData.data.questions "
     );
-    await redisClient.set(id, JSON.stringify(Course));
+    // await redisClient.set(id, JSON.stringify(Course));
     return res.status(200).json({
       data: Course,
       success: true,
     });
   }
-  }
+  // }
 );
 
 export const Get_Courses = AsyncWrapper(async (req, res, next) => 
