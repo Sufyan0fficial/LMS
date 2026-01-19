@@ -5,6 +5,8 @@ import {
   IActivateAccountPayload,
   IActivateAccountResponse,
   IAnalyticsResponse,
+  ICreateCheckoutSessionPayload,
+  ICreateCheckoutSessionResponse,
   IDeleteCourseResponse,
   IDeleteUserResponse,
   IDemoVideoResponse,
@@ -21,6 +23,8 @@ import {
   IloginUserResponse,
   ILogoutUserResponse,
   IOrdersResponse,
+  IPaymentVerificationPayload,
+  IPaymentVerificationResponse,
   IRefreshAccessTokenResponse,
   IRegisterUserPayload,
   IRegisterUserResponseData,
@@ -193,7 +197,13 @@ export const GetCoursesApi = async()=>{
   return axiosInstance.get<IGetAllCoursesResponse>('/courses/get-courses')
 }
 
+export const CreateCheckoutSessionApi = async(payload:ICreateCheckoutSessionPayload)=>{
+  return axiosInstance.post<ICreateCheckoutSessionResponse>('/payment/create-checkout-session',payload)
+}
 
+export const SessionVerificationApi = async(payload:IPaymentVerificationPayload)=>{
+  return axiosInstance.post<IPaymentVerificationResponse>('/payment/verification',payload)
+}
 
 
 

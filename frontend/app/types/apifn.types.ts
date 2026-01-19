@@ -281,7 +281,7 @@ export interface IOrdersResponse
       createdAt: Date;
       courseId: {
         price: string;
-        name:string
+        name: string;
       };
       userId: {
         name: string;
@@ -289,3 +289,22 @@ export interface IOrdersResponse
       };
     }[]
   > {}
+
+// Create Checkout Session
+
+export interface ICreateCheckoutSessionPayload {
+  courseId: string;
+  userEmail: string;
+  userId: string;
+}
+
+export interface ICreateCheckoutSessionResponse extends IGenericApiResponse<string,false>{}
+
+
+//Verify Payment
+
+export interface IPaymentVerificationPayload {
+  id:string
+}
+
+export interface IPaymentVerificationResponse extends IGenericApiResponse{}

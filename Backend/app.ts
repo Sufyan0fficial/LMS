@@ -9,6 +9,7 @@ import OrderRouter from './Routes/order.route.js'
 import NotificationRouter from './Routes/notification.route.js'
 import AnalyticsRouter from './Routes/analytics.route.js'
 import LayoutRouter from './Routes/layout.route.js'
+import PaymentRouter from './Routes/payment.route.js'
 
 
 app.use(cors({
@@ -28,5 +29,6 @@ app.use('/api/v1/order',OrderRouter)
 app.use('/api/v1/notification',NotificationRouter)
 app.use('/api/v1/analytics',AnalyticsRouter)
 app.use('/api/v1/layout',LayoutRouter)
+app.use('/api/v1/payment',PaymentRouter)
 
 app.use(ErrorHandler)

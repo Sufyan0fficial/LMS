@@ -1,8 +1,11 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { GetSingleCourseApi } from "@/app/APIs/routes";
+import {
+  CreateCheckoutSessionApi,
+  GetSingleCourseApi,
+} from "@/app/APIs/routes";
 import { ICourseData, IUser } from "@/app/types/apifn.types";
-import { Rate, Button, Spin, Collapse } from "antd";
+import { Rate, Button, Spin, Collapse, message } from "antd";
 import {
   FaPlay,
   FaCheck,
@@ -17,6 +20,8 @@ import ReviewCard from "@/app/components/ReviewCard";
 const { Panel } = Collapse;
 import VideoPlayer from "@/app/components/AdminComponents/VideoPlayer";
 import { useSelector } from "react-redux";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
 const CourseDetails = ({ params }: { params: Promise<{ id: string }> }) => {
   const [courseId, setCourseId] = useState<string>("");
@@ -26,6 +31,8 @@ const CourseDetails = ({ params }: { params: Promise<{ id: string }> }) => {
     (state: any) => state.UserReducer
   );
   const [isEnrolled, setisEnrolled] = useState(false);
+  const [messageApi, contextHolder] = message.useMessage();
+  const router = useRouter();
 
   useEffect(() => {
     const getParams = async () => {
@@ -78,8 +85,31 @@ const CourseDetails = ({ params }: { params: Promise<{ id: string }> }) => {
         )
       : 0;
 
+  const handlePurchase = async () => {
+    try {
+      setLoading(true);
+      const res = await CreateCheckoutSessionApi({
+        courseId: courseId,
+        userEmail: user?.email,
+        userId: user?._id,
+      });
+      if (res.data.success) {
+        router.push(res.data.data);
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        return messageApi.error(
+          error.response?.data?.message || "Failed to create Checkout Session"
+        );
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-body-light dark:bg-body-dark">
+      {contextHolder}
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Content */}
@@ -235,15 +265,28 @@ const CourseDetails = ({ params }: { params: Promise<{ id: string }> }) => {
                     )}
                   </div>
                 )}
+                {isEnrolled ? (
+                  <Button
+                    type="primary"
+                    size="large"
+                    block
+                    className="w-full border-none mb-4"
+                  >
+                    Get Into Course
+                  </Button>
+                ) : (
+                  <Button
+                    type="primary"
+                    size="large"
+                    block
+                    className="w-full border-none mb-4"
+                    onClick={handlePurchase}
+                    loading={loading}
 
-                <Button
-                  type="primary"
-                  size="large"
-                  block
-                  className="w-full border-none mb-4"
-                >
-                  {isEnrolled ? "Get Into Course" : `Buy Now ${course.price}`}
-                </Button>
+                  >
+                    Buy Now
+                  </Button>
+                )}
 
                 {/* Course Features */}
                 <div className="space-y-3">
