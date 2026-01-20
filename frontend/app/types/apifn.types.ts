@@ -307,4 +307,17 @@ export interface IPaymentVerificationPayload {
   id:string
 }
 
-export interface IPaymentVerificationResponse extends IGenericApiResponse{}
+export interface IPaymentVerificationResponse extends IGenericApiResponse{
+  data: {
+    userId: string;
+    courseId: string;
+  }
+}
+
+//Create Order
+export interface ICreateOrderPayload {
+  courseId: string;
+  payment_info: object;
+}
+
+export interface ICreateOrderResponse extends IGenericApiResponse<IUser> {}

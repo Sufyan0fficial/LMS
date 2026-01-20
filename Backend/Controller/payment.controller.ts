@@ -38,7 +38,7 @@ export const StripeCheckoutSession = AsyncWrapper(async (req, res, next) => {
       userId: userId,
       courseId: courseId,
     },
-    success_url: `${process.env.FRONTEND_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
+    success_url: `${process.env.FRONTEND_URL}/payment-verification?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${process.env.FRONTEND_URL}/course/${courseId}`,
   });
 
@@ -71,6 +71,7 @@ export const SessionVerification = AsyncWrapper(async (req, res, next) => {
     res.status(200).json({
       success: true,
       message: "Payment verified successfully and course access granted",
+      data:{userId,courseId}
     });
   } 
 );

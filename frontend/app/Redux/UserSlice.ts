@@ -17,10 +17,13 @@ export const userSlice = createSlice({
     dispatchUserData: (state, action) => {
       state.user = action.payload;
     },
+   removeCourses : (state, action)=>{
+    state.user = {...state.user,courses:action.payload}
+   }
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { dispatchUserData } = userSlice.actions;
+export const { dispatchUserData, removeCourses} = userSlice.actions;
 
 export default userSlice.reducer;

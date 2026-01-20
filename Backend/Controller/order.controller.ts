@@ -54,7 +54,7 @@ export const Create_Order = AsyncWrapper(async (req, res, next) => {
       _id: user?._id,
     },
     {
-      $push: {
+      $addToSet: {
         courses: courseId,
       },
     },
@@ -63,7 +63,7 @@ export const Create_Order = AsyncWrapper(async (req, res, next) => {
       runValidators: true,
     }
   );
-  await redisClient.set(user?._id, JSON.stringify(UserData));
+  // await redisClient.set(user?._id, JSON.stringify(UserData));
   await NotificationModel.create({
     userId: user?._id,
     title: "New Order",

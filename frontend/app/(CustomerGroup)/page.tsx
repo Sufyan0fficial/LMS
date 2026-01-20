@@ -9,6 +9,7 @@ import { useDispatch } from "react-redux";
 import { dispatchscreenWidth } from "../Redux/UtilSlice";
 import Faqs from "./faqs/page";
 import Footer from "../components/Footer";
+import { removeCourses } from "../Redux/UserSlice";
 
 interface IProps {}
 
@@ -16,6 +17,7 @@ const Page: FC<IProps> = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    dispatch(removeCourses([]))
     const checkInnerWidth = () => {
       console.log("inner Widht is", innerWidth);
       dispatch(dispatchscreenWidth(innerWidth));
