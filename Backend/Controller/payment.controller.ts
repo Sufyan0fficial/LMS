@@ -59,15 +59,6 @@ export const SessionVerification = AsyncWrapper(async (req, res, next) => {
   if (!userId || !courseId) {
     return next(customError(400, "Invalid payment session data"));
   }
-
-    // Add course to user's courses array (avoid duplicates)
-    
-    await userModel.findByIdAndUpdate(
-      userId,
-      { $addToSet: { courses: courseId } },
-      { new: true }
-    );
-
     res.status(200).json({
       success: true,
       message: "Payment verified successfully and course access granted",

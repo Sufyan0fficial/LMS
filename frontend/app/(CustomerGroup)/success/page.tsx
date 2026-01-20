@@ -82,7 +82,7 @@ const Success = () => {
           {verificationStatus === "success" ? (
             <div className="text-center">
               <h1 className="text-2xl font-bold text-success mb-4">
-                Payment Successful!
+                Success
               </h1>
               <p className="text-secondary-light dark:text-secondary-dark mb-6">
                 {message}
@@ -99,7 +99,7 @@ const Success = () => {
           ) : (
             <div className="text-center">
               <h1 className="text-2xl font-bold text-error mb-4">
-                Payment Failed
+                Failed
               </h1>
               <p className="text-secondary-light dark:text-secondary-dark mb-6">
                 {message}
@@ -110,7 +110,7 @@ const Success = () => {
                 onClick={handleRetry}
                 className="bg-bprimary hover:bg-bprimary-hover border-none w-full"
               >
-                Try Again
+               Go back to Home
               </Button>
             </div>
           )}

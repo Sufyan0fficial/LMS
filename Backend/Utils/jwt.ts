@@ -15,7 +15,7 @@ export const SendCookie = (user:IUser,statusCode:number,res:Response, flag?:bool
     const refreshTokenExpires = parseInt(process.env.REFRESH_TOKEN_EXPIRES as string ,10) * 24 * 60 * 60 * 1000
 
     if(!flag){
-        redisClient.set(`${user?._id}`, JSON.stringify(user)) 
+        // redisClient.set(`${user?._id}`, JSON.stringify(user)) 
     }
     
 

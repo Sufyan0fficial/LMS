@@ -14,6 +14,7 @@ export const Create_Order = AsyncWrapper(async (req, res, next) => {
   const { courseId, payment_info } = req.body;
   const user = req.user;
   const enrolledCourses = user?.courses;
+  console.log('enrolled courses are',enrolledCourses)
   const isAlreadyPurchased = enrolledCourses.some(
     (course: string) => course === courseId
   );

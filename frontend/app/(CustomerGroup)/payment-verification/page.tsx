@@ -49,7 +49,7 @@ const PaymentVerification = () => {
     };
 
     verifyPayment();
-  }, [searchParams, dispatch, router]);
+  }, [searchParams]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-body-light dark:bg-body-dark">
