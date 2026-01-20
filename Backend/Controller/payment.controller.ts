@@ -60,13 +60,6 @@ export const SessionVerification = AsyncWrapper(async (req, res, next) => {
     return next(customError(400, "Invalid payment session data"));
   }
 
-    // Update course purchased count
-    await CourseModel.findByIdAndUpdate(
-      courseId,
-      { $inc: { purchased: 1 } },
-      { new: true }
-    );
-
     // Add course to user's courses array (avoid duplicates)
     
     await userModel.findByIdAndUpdate(

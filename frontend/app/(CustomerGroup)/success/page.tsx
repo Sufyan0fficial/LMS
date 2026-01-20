@@ -51,9 +51,6 @@ const Success = () => {
         );
       } finally {
         setLoading(false);
-        setTimeout(() => {
-          router.push('/')
-        }, 1500);
       }
     };
 
