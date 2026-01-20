@@ -21,8 +21,8 @@ const RefreshTokenProvider = ({ children }: { children: ReactNode }) => {
       "/login",
       "/signup",
       "/verify-account",
-      "reset-password",
-      "forget-password",
+      "/reset-password",
+      "/forget-password",
     ];
     const fetchAccessToken = async () => {
       try {

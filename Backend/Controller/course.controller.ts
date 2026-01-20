@@ -112,16 +112,16 @@ export const Get_Single_Course = AsyncWrapper(
 
 export const Get_Courses = AsyncWrapper(async (req, res, next) => 
   {
-  const isRedisAvailable = (await redisClient.get("allCourses")) as any;
-  const parsedData = JSON.parse(isRedisAvailable);
-  if (parsedData?.length > 0) {
-    console.log("redis hitting");
-    return res.status(200).json({
-      data: parsedData,
-      success: true,
-    });
-  }
-   else {
+  // const isRedisAvailable = (await redisClient.get("allCourses")) as any;
+  // const parsedData = JSON.parse(isRedisAvailable);
+  // if (parsedData?.length > 0) {
+  //   console.log("redis hitting");
+  //   return res.status(200).json({
+  //     data: parsedData,
+  //     success: true,
+  //   });
+  // }
+  //  else {
     console.log("db hitting");
   const Courses = await CourseModel.find().select(
     "-courseData.data.link -courseData.data.suggestion -courseData.data.questions -courseData.data.url"
@@ -131,7 +131,9 @@ export const Get_Courses = AsyncWrapper(async (req, res, next) =>
     data: Courses,
     success: true,
   });
-  }})
+  }
+// }
+)
 
 export const Access_Course_Content = AsyncWrapper(async (req, res, next) => {
   const courseId = req.params?.id;
