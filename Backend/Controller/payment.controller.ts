@@ -2,6 +2,7 @@
 
 import { AsyncWrapper } from "../MiddleWare/AsyncWrapper.js";
 import { CourseModel } from "../Model/course.model.js";
+import { userModel } from "../Model/user.model.js";
 import { customError } from "../Utils/customError.js";
 import dotenv from "dotenv";
 import Stripe from "stripe";
@@ -37,8 +38,8 @@ export const StripeCheckoutSession = AsyncWrapper(async (req, res, next) => {
       userId: userId,
       courseId: courseId,
     },
-    success_url: `${process.env.FRONTEND_URL}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${process.env.FRONTEND_URL}/courses/${courseId}`,
+    success_url: `${process.env.FRONTEND_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${process.env.FRONTEND_URL}/course/${courseId}`,
   });
 
   res.json({success:true, data: session.url });
@@ -47,13 +48,36 @@ export const StripeCheckoutSession = AsyncWrapper(async (req, res, next) => {
 export const SessionVerification = AsyncWrapper(async (req, res, next) => {
   const id = req.body?.id;
   const response = await stripe.checkout.sessions.retrieve(id);
+  
   if (response?.payment_status !== "paid") {
     return next(customError(400, "Payment Verification Failed"));
   }
-  res.status(200).json({
-    success: true,
-    message: "Payment Verified successfull",
-  });
-});
 
+  // Extract metadata from the session
+  const { userId, courseId } = response.metadata || {};
+  
+  if (!userId || !courseId) {
+    return next(customError(400, "Invalid payment session data"));
+  }
 
+    // Update course purchased count
+    await CourseModel.findByIdAndUpdate(
+      courseId,
+      { $inc: { purchased: 1 } },
+      { new: true }
+    );
+
+    // Add course to user's courses array (avoid duplicates)
+    
+    await userModel.findByIdAndUpdate(
+      userId,
+      { $addToSet: { courses: courseId } },
+      { new: true }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Payment verified successfully and course access granted",
+    });
+  } 
+);
