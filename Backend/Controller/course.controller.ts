@@ -197,10 +197,7 @@ export const Ask_Question = AsyncWrapper(async (req, res, next) => {
   );
 
   if (!updatedCourse) {
-    return res.status(404).json({
-      success: false,
-      message: "Course or content not found",
-    });
+    return next(customError(400,'Failed to post question !'))
   }
 
   const courseSection = updatedCourse?.courseData.find((section: any) => 

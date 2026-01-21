@@ -76,7 +76,7 @@ const Signup: React.FC = () => {
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        messageApi.error("Something went wrong. Please try again later");
+        messageApi.error(error.response?.data?.message || "Please check your Internet connection or Try again later");
       }
     } finally {
       setloading(false);
