@@ -5,6 +5,6 @@ const router = express.Router()
 
 router.route('/create').post(Verify_User,Authorize_Role('user'),Create_Layout)
 router.route('/update').patch(Verify_User,Authorize_Role('user'),Update_Layout)
-router.route('/get-layout').post(Verify_User,Authorize_Role('user'),Get_LayoutBy_Type)
+router.route('/get-layout').post(Get_LayoutBy_Type)
 
 export default router

@@ -285,6 +285,7 @@ export const Refresh_AccessToken = AsyncWrapper(async (req, res, next) => {
     refresh_token,
     process.env.REFRESH_TOKEN as string,
   ) as { id: string };
+  console.log('user is',user)
   if (!user?.id) {
     return next(customError(403, "Session Expired ! Please login again"));
   }

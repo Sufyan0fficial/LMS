@@ -15,7 +15,8 @@ const middleware = async (req: NextRequest) => {
 
   if (
     pathname.pathname.startsWith("/profile") ||
-    pathname.pathname.startsWith("/admin")
+    pathname.pathname.startsWith("/admin") ||
+    pathname.pathname.startsWith("/course-access")
   ) {
     if (!isAuthenticated) {
       const homeUrl = new URL("/", req.url);
@@ -26,7 +27,7 @@ const middleware = async (req: NextRequest) => {
 };
 
 export const config = {
-  matcher: ["/profile/:path*", "/admin/:path*"],
+  matcher: ["/profile/:path*", "/admin/:path*", "/course-access/:path*"],
 };
 
 export default middleware;

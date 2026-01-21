@@ -333,6 +333,93 @@ export interface ICourseContentResponse extends IGenericApiResponse<
       url: string;
       videoLength: string;
       link: { title: string; url: string }[];
+      questions: {
+        _id: string;
+        user: {
+          _id: string;
+          name: string;
+          avatar: { url: string };
+          role:string
+        };
+        question: string;
+        answer: {
+          _id: string;
+          user: {
+            _id: string;
+            name: string;
+            avatar: { url: string };
+            role:string
+          };
+          answer: string;
+          createdAt: Date;
+        }[];
+        createdAt: Date;
+      }[];
+    }[];
+  }[],
+  false
+> {}
+
+// Add Question
+export interface IAddQuestionPayload {
+  question: string;
+  courseId: string;
+  contentId: string;
+}
+
+export interface IAddQuestionResponse extends IGenericApiResponse {}
+
+// Add Answer
+export interface IAddAnswerPayload {
+  answer: string;
+  courseId: string;
+  contentId: string;
+  questionId: string;
+}
+
+export interface IAddAnswerResponse extends IGenericApiResponse {}
+
+// Add Review
+export interface IAddReviewPayload {
+  rating: number;
+  comment: string;
+  
+}
+
+export interface IAddReviewResponse extends IGenericApiResponse {}
+
+// Add Review Reply (Admin only)
+export interface IAddReviewReplyPayload {
+  reply: string;
+  courseId: string;
+  reviewId: string;
+}
+
+export interface IAddReviewReplyResponse extends IGenericApiResponse {}
+
+// Get Course Reviews
+export interface ICourseReviewsResponse extends IGenericApiResponse<
+  {
+    _id: string;
+    user: {
+      _id: string;
+      name: string;
+      avatar: { url: string };
+      role:string
+    };
+    comment: string;
+    rating: number;
+    createdAt: Date;
+    reviewReplies: {
+      _id: string;
+      user: {
+        _id: string;
+        name: string;
+        avatar: { url: string };
+        role:string
+      };
+      reply: string;
+      createdAt: Date;
     }[];
   }[],
   false

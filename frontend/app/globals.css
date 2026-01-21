@@ -134,22 +134,3 @@
       display: none;
   }
 }
-/* Course Access Styles */
-.course-collapse .ant-collapse-item {
-  border: none !important;
-  margin-bottom: 8px;
-}
-
-.course-collapse .ant-collapse-header {
-  padding: 12px 0 !important;
-  border-radius: 8px !important;
-}
-
-.course-collapse .ant-collapse-content {
-  border: none !important;
-  background: transparent !important;
-}
-
-.course-collapse .ant-collapse-content-box {
-  padding: 0 !important;
-}

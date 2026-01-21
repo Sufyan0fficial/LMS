@@ -197,10 +197,7 @@ export const Ask_Question = AsyncWrapper(async (req, res, next) => {
   );
 
   if (!updatedCourse) {
-    return res.status(404).json({
-      success: false,
-      message: "Course or content not found",
-    });
+    return next(customError(400,'Failed to post question !'))
   }
 
   const courseSection = updatedCourse?.courseData.find((section: any) => 
@@ -234,7 +231,7 @@ export const Answer_Question = AsyncWrapper(async (req, res, next) => {
         "courseData.$.data.$[elem].questions.$[q].answer": {
           answer,
           user: req.user,
-          timeStamp: new Date(),
+          createdAt: new Date(),
         },
       },
     },
@@ -325,7 +322,7 @@ export const Add_Review = AsyncWrapper(async (req, res, next) => {
     );
   }
   const reviewData = {
-    comment,
+    comment, 
     rating,
     user,
     createdAt: new Date(),
@@ -453,3 +450,21 @@ export const VdoCipher_Video_Data = AsyncWrapper(async (req, res, next) => {
   }
   return res.status(200).json({ success: true, data: response.data });
 });
+
+
+
+export const Get_Reviews = AsyncWrapper(async(req,res,next)=>{
+  const courseId = req.params?.id
+  if(!courseId){
+    return next(customError(400,'Failed to post your review'))
+  }
+  const reviews = await CourseModel.findById(courseId)
+  if(!reviews){
+    return next(customError(400,'Failed to find request course'))
+  }
+  return res.status(200).json({
+    success:true,
+    data:reviews?.reviews
+  })
+
+})

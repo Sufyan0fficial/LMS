@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import {
   CreateCheckoutSessionApi,
+  GetProfileData,
   GetSingleCourseApi,
 } from "@/app/APIs/routes";
 import { ICourseData, IUser } from "@/app/types/apifn.types";
@@ -37,8 +38,10 @@ const CourseDetails = ({ params }: { params: Promise<{ id: string }> }) => {
   useEffect(() => {
     const getParams = async () => {
       const resolvedParams = await params;
+      const userData = await GetProfileData()
+      if(userData.data.success)
       setCourseId(resolvedParams.id);
-      setisEnrolled(user.courses.includes(resolvedParams.id));
+      setisEnrolled(userData.data.data.courses.includes(resolvedParams.id) || user.courses.includes(resolvedParams.id));
     };
     getParams();
   }, [params]);
