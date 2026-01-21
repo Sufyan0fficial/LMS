@@ -271,6 +271,7 @@ const CourseDetails = ({ params }: { params: Promise<{ id: string }> }) => {
                     size="large"
                     block
                     className="w-full border-none mb-4"
+                    onClick={()=>router.push(`/course-access/${courseId}`)}
                   >
                     Get Into Course
                   </Button>

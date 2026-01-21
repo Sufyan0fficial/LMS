@@ -321,3 +321,19 @@ export interface ICreateOrderPayload {
 }
 
 export interface ICreateOrderResponse extends IGenericApiResponse<IUser> {}
+
+//Course Content Access
+export interface ICourseContentResponse extends IGenericApiResponse<
+  {
+    sectionName: string;
+    data: {
+      _id: string;
+      name: string;
+      description: string;
+      url: string;
+      videoLength: string;
+      link: { title: string; url: string }[];
+    }[];
+  }[],
+  false
+> {}

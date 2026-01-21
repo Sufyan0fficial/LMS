@@ -145,7 +145,7 @@ export const Access_Course_Content = AsyncWrapper(async (req, res, next) => {
 
   if (!isRequestedCourseEnrolled) {
     return next(
-      customError(400, "Course Content is Protected ! Use is not enrolled")
+      customError(400, "Access Denied ! User is not enrolled")
     );
   }
   const course = await CourseModel.findById(courseId);

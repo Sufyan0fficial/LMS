@@ -17,7 +17,7 @@ const Page: FC<IProps> = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(removeCourses([]))
+    // dispatch(removeCourses([]))
     const checkInnerWidth = () => {
       console.log("inner Widht is", innerWidth);
       dispatch(dispatchscreenWidth(innerWidth));

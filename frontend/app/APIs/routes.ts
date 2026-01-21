@@ -45,7 +45,7 @@ import {
   IUploadCoursePayload,
   IUploadCourseResponse,
 } from "../types/apifn.types";
-import { ICreateOrderPayload, ICreateOrderResponse } from "../types/apifn.types";
+import { ICreateOrderPayload, ICreateOrderResponse, ICourseContentResponse } from "../types/apifn.types";
 import { axiosInstance } from "./config";
 import { ICreateCoursePayload } from "../(AdminGroup)/admin/create-courses/page";
 
@@ -211,4 +211,8 @@ export const SessionVerificationApi = async(payload:IPaymentVerificationPayload)
 
 export const CreateOrderApi = async(payload:ICreateOrderPayload)=>{
   return axiosInstance.post<ICreateOrderResponse>('/order/create',payload)
+}
+
+export const GetCourseContentApi = async(id:string)=>{
+  return axiosInstance.get<ICourseContentResponse>(`/courses/get-course-content/${id}`)
 }
