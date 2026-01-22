@@ -134,6 +134,7 @@ interface Review {
   }[];
 }
 
+
 const CourseAccess = () => {
   const [courseContent, setCourseContent] = useState<CourseSection[]>([]);
   const [loading, setLoading] = useState(true);
@@ -219,9 +220,14 @@ const CourseAccess = () => {
           setCurrentVideo(firstLesson.url);
           setCurrentLesson(firstLesson);
           setCurrentLessonIndex({ section: 0, lesson: 0 });
+          setCurrentLessonIndex({ section: 0, lesson: 0 });
         }
       }
     } catch (error: any) {
+      message.error(
+        error.response?.data?.message ||
+          "Access denied. You are not enrolled in this course.",
+      );
       message.error(
         error.response?.data?.message ||
           "Access denied. You are not enrolled in this course.",
@@ -237,8 +243,66 @@ const CourseAccess = () => {
     sectionIndex: number,
     lessonIndex: number,
   ) => {
+  const handleLessonClick = (
+    lesson: LessonData,
+    sectionIndex: number,
+    lessonIndex: number,
+  ) => {
     setCurrentVideo(lesson.url);
     setCurrentLesson(lesson);
+    setCurrentLessonIndex({ section: sectionIndex, lesson: lessonIndex });
+  };
+
+  const getAllLessons = () => {
+    const allLessons: {
+      lesson: LessonData;
+      sectionIndex: number;
+      lessonIndex: number;
+    }[] = [];
+    courseContent.forEach((section, sectionIndex) => {
+      section.data.forEach((lesson, lessonIndex) => {
+        allLessons.push({ lesson, sectionIndex, lessonIndex });
+      });
+    });
+    return allLessons;
+  };
+
+  const getCurrentLessonGlobalIndex = () => {
+    const allLessons = getAllLessons();
+    return allLessons.findIndex(
+      (item) =>
+        item.sectionIndex === currentLessonIndex.section &&
+        item.lessonIndex === currentLessonIndex.lesson,
+    );
+  };
+
+  const navigateToLesson = (direction: "prev" | "next") => {
+    const allLessons = getAllLessons();
+    const currentGlobalIndex = getCurrentLessonGlobalIndex();
+
+    let newIndex;
+    if (direction === "prev") {
+      newIndex = currentGlobalIndex > 0 ? currentGlobalIndex - 1 : 0;
+    } else {
+      newIndex =
+        currentGlobalIndex < allLessons.length - 1
+          ? currentGlobalIndex + 1
+          : allLessons.length - 1;
+    }
+
+    const targetLesson = allLessons[newIndex];
+    if (targetLesson) {
+      handleLessonClick(
+        targetLesson.lesson,
+        targetLesson.sectionIndex,
+        targetLesson.lessonIndex,
+      );
+    }
+  };
+
+  const canNavigatePrev = () => getCurrentLessonGlobalIndex() > 0;
+  const canNavigateNext = () =>
+    getCurrentLessonGlobalIndex() < getAllLessons().length - 1;
     setCurrentLessonIndex({ section: sectionIndex, lesson: lessonIndex });
   };
 
