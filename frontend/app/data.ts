@@ -1,28 +1,30 @@
 import { ICourseData, ICourseDataSchema } from "./types/apifn.types";
 
 export const CourseContent:ICourseDataSchema = {
-    name:'',
-    description:'',
-   
-    link:[
+    sectionName:'',
+    data:[
         {
-            title:'',
-            url:''
+            name:'',
+            description:'',
+            link:[
+                {
+                    title:'',
+                    url:''
+                }
+            ],
+            url:'',
+            suggestion:[''],
+            questions:[
+                {
+                    user:{},
+                    question:'',
+                    answer:[{}],
+                    createdAt:new Date()
+                }
+            ],
+            videoLength:0
         }
-    ],
-    url:'',
-    suggestion:[''],
-    questions:[
-        {
-            user:{},
-            question:'',
-            answer:[{}],
-            createdAt:new Date()
-
-        }
-    ],
-    videoLength:0
-
+    ]
 }
 
 export const CourseData:ICourseData = {
@@ -54,6 +56,4 @@ export const CourseData:ICourseData = {
     ratings:0,
     createdAt: new Date(),
     category:''
-
-
 }

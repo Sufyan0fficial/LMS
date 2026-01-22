@@ -45,7 +45,7 @@ import {
   IUploadCoursePayload,
   IUploadCourseResponse,
 } from "../types/apifn.types";
-import { ICreateOrderPayload, ICreateOrderResponse, ICourseContentResponse, IAddQuestionPayload, IAddQuestionResponse, IAddAnswerPayload, IAddAnswerResponse, IAddReviewPayload, IAddReviewResponse, IAddReviewReplyPayload, IAddReviewReplyResponse, ICourseReviewsResponse } from "../types/apifn.types";
+import { ICreateOrderPayload, ICreateOrderResponse, ICourseContentResponse, IAddQuestionPayload, IAddQuestionResponse, IAddAnswerPayload, IAddAnswerResponse, IAddReviewPayload, IAddReviewResponse, IAddReviewReplyPayload, IAddReviewReplyResponse, ICourseReviewsResponse, IEditReviewPayload, IEditReviewResponse, IGetUserReviewResponse } from "../types/apifn.types";
 import { axiosInstance } from "./config";
 import { ICreateCoursePayload } from "../(AdminGroup)/admin/create-courses/page";
 
@@ -237,4 +237,11 @@ export const AddReviewReplyApi = async(payload: IAddReviewReplyPayload) => {
 
 export const GetCourseReviewsApi = async(courseId: string) => {
   return axiosInstance.get<ICourseReviewsResponse>(`/courses/get-reviews/${courseId}`)
+}
+export const EditReviewApi = async(payload: IEditReviewPayload, courseId: string) => {
+  return axiosInstance.patch<IEditReviewResponse>(`/courses/edit-review/${courseId}`, payload)
+}
+
+export const GetUserReviewApi = async(courseId: string) => {
+  return axiosInstance.get<IGetUserReviewResponse>(`/courses/get-user-review/${courseId}`)
 }

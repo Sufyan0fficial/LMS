@@ -8,6 +8,8 @@ import {
   AddReviewApi,
   AddReviewReplyApi,
   GetCourseReviewsApi,
+  EditReviewApi,
+  GetUserReviewApi,
 } from "@/app/APIs/routes";
 import {
   Button,
@@ -39,6 +41,7 @@ import Link from "next/link";
 import { useSelector } from "react-redux";
 import { MdReplyAll } from "react-icons/md";
 import { VscVerifiedFilled } from "react-icons/vsc";
+import Image from "next/image";
 
 const { TextArea } = Input;
 
@@ -155,6 +158,13 @@ const CourseAccess = () => {
   const [reviewReplyText, setReviewReplyText] = useState("");
   const [replyingToReview, setReplyingToReview] = useState<string | null>(null);
   const [reviewLoading, setReviewLoading] = useState(false);
+  const [userReview, setUserReview] = useState<{
+    _id: string;
+    comment: string;
+    rating: number;
+    createdAt: Date;
+  } | null>(null);
+  const [isEditingReview, setIsEditingReview] = useState(false);
 
   const params = useParams();
   const router = useRouter();
@@ -167,6 +177,7 @@ const CourseAccess = () => {
     if (courseId) {
       fetchCourseContent();
       fetchReviews();
+      fetchUserReview();
     }
   }, [courseId]);
 
@@ -178,6 +189,20 @@ const CourseAccess = () => {
       }
     } catch (error) {
       console.error("Failed to fetch reviews:", error);
+    }
+  };
+
+  const fetchUserReview = async () => {
+    try {
+      const response = await GetUserReviewApi(courseId);
+      const responseData = response.data as any;
+      if (responseData.success && responseData.data) {
+        setUserReview(responseData.data);
+        setReviewText(responseData.data.comment);
+        setReviewRating(responseData.data.rating);
+      }
+    } catch (error) {
+      console.error("Failed to fetch user review:", error);
     }
   };
 
@@ -334,11 +359,46 @@ const CourseAccess = () => {
       message.success("Review posted successfully!");
       setReviewText("");
       setReviewRating(0);
-      fetchReviews(); // Refresh reviews
+      fetchReviews();
+      fetchUserReview();
     } catch (error: any) {
       message.error(error.response?.data?.message || "Failed to post review");
     } finally {
       setReviewLoading(false);
+    }
+  };
+
+  const handleEditReview = async () => {
+    if (!reviewText.trim() || reviewRating === 0) {
+      message.error("Please provide both rating and comment");
+      return;
+    }
+
+    setReviewLoading(true);
+    try {
+      await EditReviewApi(
+        {
+          rating: reviewRating,
+          comment: reviewText,
+        },
+        courseId,
+      );
+      message.success("Review updated successfully!");
+      setIsEditingReview(false);
+      fetchReviews();
+      fetchUserReview();
+    } catch (error: any) {
+      message.error(error.response?.data?.message || "Failed to update review");
+    } finally {
+      setReviewLoading(false);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditingReview(false);
+    if (userReview) {
+      setReviewText(userReview.comment);
+      setReviewRating(userReview.rating);
     }
   };
 
@@ -619,17 +679,20 @@ const CourseAccess = () => {
                                   </Button>
                                 </div>
                               </div>
-                            ) : (
+                            ) : 
+                              
+
                               <Button
                                 size="small"
                                 type="text"
                                 icon={<MdReplyAll />}
                                 onClick={() => setReplyingTo(question._id)}
-                                className="text-bprimary"
+                                className={`text-bprimary hidden`}
                               >
                                 Reply
                               </Button>
-                            )}
+                              
+                          }
                           </div>
                         </div>
                       </div>
@@ -695,30 +758,87 @@ const CourseAccess = () => {
       ),
       children: (
         <div className=" pb-6">
-          <div className="border-b border-border-light dark:border-border-dark pb-4">
-            <h3 className="text-lg font-semibold text-primary-light dark:text-primary-dark mb-3">
-              Rate this Course
-            </h3>
-            <div className="flex flex-col gap-y-3">
-              <Rate allowHalf value={reviewRating} onChange={setReviewRating} />
-              <TextArea
-                rows={3}
-                placeholder="Share your experience with this course..."
-                value={reviewText}
-                onChange={(e) => setReviewText(e.target.value)}
-              />
-              <Button
-                type="primary"
-                className="bg-bprimary max-w-max mt-2 mb-2"
-                onClick={handleAddReview}
-                loading={reviewLoading}
-                disabled={!reviewText.trim() || reviewRating === 0}
-                icon={<SendOutlined />}
-              >
-                Submit Review
-              </Button>
+          {!userReview ? (
+            <div className="border-b border-border-light dark:border-border-dark pb-4">
+              <h3 className="text-lg font-semibold text-primary-light dark:text-primary-dark mb-3">
+                Rate this Course
+              </h3>
+              <div className="flex flex-col gap-y-3">
+                <Rate allowHalf value={reviewRating} onChange={setReviewRating} />
+                <TextArea
+                  rows={3}
+                  placeholder="Share your experience with this course..."
+                  value={reviewText}
+                  onChange={(e) => setReviewText(e.target.value)}
+                />
+                <Button
+                  type="primary"
+                  className="bg-bprimary max-w-max mt-2 mb-2"
+                  onClick={handleAddReview}
+                  loading={reviewLoading}
+                  disabled={!reviewText.trim() || reviewRating === 0}
+                  icon={<SendOutlined />}
+                >
+                  Submit Review
+                </Button>
+              </div>
             </div>
-          </div>
+          ) : (
+            // Show edit review section if user has already reviewed
+            <div className="border-b border-border-light dark:border-border-dark pb-4">
+              <div className="flex justify-between items-center mb-3">
+                <h3 className="text-lg font-semibold text-primary-light dark:text-primary-dark">
+                  Your Review
+                </h3>
+                {!isEditingReview && (
+                  <Button
+                    type="text"
+                    onClick={() => setIsEditingReview(true)}
+                    className="text-bprimary"
+                  >
+                    Edit Review
+                  </Button>
+                )}
+              </div>
+              
+              {isEditingReview ? (
+                <div className="flex flex-col gap-y-3">
+                  <Rate value={reviewRating} onChange={setReviewRating} />
+                  <TextArea
+                    rows={3}
+                    placeholder="Update your experience with this course..."
+                    value={reviewText}
+                    onChange={(e) => setReviewText(e.target.value)}
+                  />
+                  <div className="flex gap-2">
+                    <Button
+                      type="primary"
+                      className="bg-bprimary"
+                      onClick={handleEditReview}
+                      loading={reviewLoading}
+                      disabled={!reviewText.trim() || reviewRating === 0}
+                      icon={<SendOutlined />}
+                    >
+                      Update Review
+                    </Button>
+                    <Button onClick={handleCancelEdit}>
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="bg-card-light dark:bg-card-dark p-4 rounded-lg border border-border-light dark:border-border-dark">
+                  <Rate disabled value={userReview.rating} className="mb-2" />
+                  <p className="text-secondary-light dark:text-secondary-dark">
+                    {userReview.comment}
+                  </p>
+                  <p className="text-xs text-secondary-light dark:text-secondary-dark mt-2">
+                    Reviewed on {new Date(userReview.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
 
           <div>
             <h3 className="text-lg font-semibold text-primary-light dark:text-primary-dark mb-5 mt-4">
@@ -729,9 +849,9 @@ const CourseAccess = () => {
                 {reviews.map((review) => (
                   <Card
                     key={review._id}
-                    className="border border-border-light dark:border-border-dark max-w-full overflow-x-auto relative"
+                    className="border border-border-light dark:border-border-dark"
                   >
-                    <div className="flex flex-col gap-y-4! min-w-max ">
+                    <div className="flex flex-col gap-y-4!  ">
                       <div className="flex justify-between">
                         <Rate
                           rootClassName=""
@@ -770,17 +890,29 @@ const CourseAccess = () => {
                                 key={reply._id}
                                 className="flex items-start gap-3"
                               >
-                                <Avatar
-                                  src={reply.user.avatar?.url}
-                                  icon={<UserOutlined />}
-                                  size={32}
-                                />
+                                {reply.user.avatar?.url ? (
+                                  <Image
+                                    src={reply.user.avatar?.url}
+                                    alt="admin-image"
+                                    width={32}
+                                    height={32}
+                                    className="rounded-full"
+                                  />
+                                ) : (
+                                  <Avatar
+                                    icon={<UserOutlined />}
+                                    size={32}
+                                  />
+                                )}
                                 <div className="flex-1">
-                                  <div className="flex items-center gap-2 mb-1">
-                                    <span className="font-medium text-primary-light dark:text-primary-dark text-sm">
+                                  <div className="flex items-center gap-2 mb-1 justify-between">
+                                    <div className="flex items-center">
+
+                                    <span className="font-medium text-primary-light dark:text-primary-dark text-sm max-w-20 overflow-hidden whitespace-nowrap text-ellipsis">
                                       {reply.user.name}
                                     </span>
-                                    <VscVerifiedFilled className="dark:text-accent text-bprimary" />
+                                    <VscVerifiedFilled className="dark:text-accent text-bprimary shrink-0!" />
+                                    </div>
 
                                     <span className="text-xs text-secondary-light dark:text-secondary-dark">
                                       {new Date(

@@ -81,18 +81,17 @@ function Account() {
             }, 2000);
             dispatch(dispatchUserData(res.data.data))
           }
+          
         }
       }
     } catch (error) {
       console.log('error is',error)
-      setTimeout(() => {
         messageApi.open({
           key: "upload",
           content: "Failed to upload image",
           type: "error",
         });
         setpreview('/profileimage.png')
-      }, 2000);
     }
   };
 

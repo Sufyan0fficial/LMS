@@ -321,6 +321,17 @@ export const Add_Review = AsyncWrapper(async (req, res, next) => {
       customError(400, "You are not eligible to add review to this course")
     );
   }
+
+  // Check if user already has a review
+  const existingCourse = await CourseModel.findById(courseId);
+  const existingReview = existingCourse?.reviews?.find(
+    (review: any) => review.user._id.toString() === user._id.toString()
+  );
+  
+  if (existingReview) {
+    return next(customError(400, "You have already reviewed this course. Use edit review instead."));
+  }
+
   const reviewData = {
     comment, 
     rating,
@@ -468,3 +479,86 @@ export const Get_Reviews = AsyncWrapper(async(req,res,next)=>{
   })
 
 })
+
+export const Edit_Review = AsyncWrapper(async (req, res, next) => {
+  const courseId = req.params?.id;
+  const comment = req.body?.comment;
+  const rating = req.body?.rating;
+  const user = req.user;
+  
+  if (!courseId || !comment || !rating) {
+    return next(customError(400, "Course ID, comment, and rating are required"));
+  }
+
+  const enrolledCourses = user?.courses;
+  const isUserEligible = enrolledCourses.some(
+    (course: string) => course === courseId
+  );
+  
+  if (!isUserEligible) {
+    return next(
+      customError(400, "You are not eligible to edit review for this course")
+    );
+  }
+
+  const course = await CourseModel.findById(courseId);
+  if (!course) {
+    return next(customError(400, "Course not found"));
+  }
+
+  const reviewIndex = course.reviews.findIndex(
+    (review: any) => review.user._id.toString() === user._id.toString()
+  );
+
+  if (reviewIndex === -1) {
+    return next(customError(400, "You haven't reviewed this course yet"));
+  }
+
+  // Update the review
+  course.reviews[reviewIndex].comment = comment;
+  course.reviews[reviewIndex].rating = rating;
+  course.reviews[reviewIndex].createdAt  = new Date() as any
+
+  await course.save();
+
+  // Recalculate average rating
+  let totalSum = 0;
+  course.reviews.forEach((rev: any) => {
+    const rating = Number(rev?.rating);
+    if (!isNaN(rating)) {
+      totalSum += rating;
+    }
+  });
+
+  const avgRating = totalSum / course.reviews.length;
+  course.ratings = avgRating;
+  await course.save();
+
+  return res.status(200).json({
+    success: true,
+    message: "Review updated successfully",
+  });
+});
+
+export const Get_User_Review = AsyncWrapper(async (req, res, next) => {
+  const courseId = req.params?.id;
+  const user = req.user;
+  
+  if (!courseId) {
+    return next(customError(400, "Course ID is required"));
+  }
+
+  const course = await CourseModel.findById(courseId);
+  if (!course) {
+    return next(customError(400, "Course not found"));
+  }
+
+  const userReview = course.reviews.find(
+    (review: any) => review.user._id.toString() === user._id.toString()
+  );
+
+  return res.status(200).json({
+    success: true,
+    data: userReview || null,
+  });
+});

@@ -424,3 +424,21 @@ export interface ICourseReviewsResponse extends IGenericApiResponse<
   }[],
   false
 > {}
+// Edit Review
+export interface IEditReviewPayload {
+  rating: number;
+  comment: string;
+}
+
+export interface IEditReviewResponse extends IGenericApiResponse {}
+
+// Get User's Review for Course
+export type IGetUserReviewResponse = IGenericApiResponse<
+  {
+    _id: string;
+    comment: string;
+    rating: number;
+    createdAt: Date;
+  } | null,
+  false
+>;
