@@ -26,7 +26,7 @@ const CourseCard = ({ course }: { course: ICourseData }) => {
           value={course.ratings}
         />
       </div>
-      <div className="text-center my-2 text-lg font-bold">{course.name}</div>
+      <div className="text-center my-2 text-lg font-bold max-w-full whitespace-nowrap overflow-hidden text-ellipsis">{course.name}</div>
       <div className="flex justify-between pt-2 pb-2 items-center">
         <div className="flex gap-x-1 lg:gap-x-2 items-center">
           <span className="text-3xl font-bold">{course.price === 0 ? "Free" : `$${course.price}`}</span>

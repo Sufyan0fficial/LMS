@@ -49,7 +49,7 @@ const CoursesPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCourses, setTotalCourses] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
-  const [pageSize] = useState(2);
+  const [pageSize] = useState(12);
 
   // Filter states
   const [searchQuery, setSearchQuery] = useState("");
