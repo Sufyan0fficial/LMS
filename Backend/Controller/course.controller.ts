@@ -350,9 +350,17 @@ export const Add_Review = AsyncWrapper(async (req, res, next) => {
     },
     { new: true, runValidators: true }
   );
+
+  
   if (!addReview) {
     return next(customError(400, "Failed to add review"));
   }
+
+  await NotificationModel.create({
+  title: "New Question Asked",
+  userId: user?._id,
+  message: `${user?.name} give review to the course ${existingCourse?.name}`,
+});
   const allReveiws = addReview?.reviews;
   console.log("all reviews are", allReveiws);
   let totalSum: number = 0;

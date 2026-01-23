@@ -455,3 +455,23 @@ export interface ISearchCoursesResponse extends IGenericApiResponse<
   },
   false
 > {}
+
+// Notification Types
+export interface INotification {
+  _id: string;
+  userId: string;
+  title: string;
+  message: string;
+  status: 'read' | 'unread';
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// Get Notifications Response
+export interface IGetNotificationsResponse extends IGenericApiResponse<INotification[], false> {}
+
+// Update Notification Response
+export interface IUpdateNotificationResponse extends IGenericApiResponse<INotification[]> {}
+
+// Delete Notification Response
+export interface IDeleteNotificationResponse extends IGenericApiResponse<INotification[]> {}

@@ -45,7 +45,7 @@ import {
   IUploadCoursePayload,
   IUploadCourseResponse,
 } from "../types/apifn.types";
-import { ICreateOrderPayload, ICreateOrderResponse, ICourseContentResponse, IAddQuestionPayload, IAddQuestionResponse, IAddAnswerPayload, IAddAnswerResponse, IAddReviewPayload, IAddReviewResponse, IAddReviewReplyPayload, IAddReviewReplyResponse, ICourseReviewsResponse, IEditReviewPayload, IEditReviewResponse, IGetUserReviewResponse, ISearchCoursesResponse } from "../types/apifn.types";
+import { ICreateOrderPayload, ICreateOrderResponse, ICourseContentResponse, IAddQuestionPayload, IAddQuestionResponse, IAddAnswerPayload, IAddAnswerResponse, IAddReviewPayload, IAddReviewResponse, IAddReviewReplyPayload, IAddReviewReplyResponse, ICourseReviewsResponse, IEditReviewPayload, IEditReviewResponse, IGetUserReviewResponse, ISearchCoursesResponse, IGetNotificationsResponse, IUpdateNotificationResponse, IDeleteNotificationResponse } from "../types/apifn.types";
 import { axiosInstance } from "./config";
 import { ICreateCoursePayload } from "../(AdminGroup)/admin/create-courses/page";
 
@@ -263,4 +263,17 @@ export const SearchCoursesApi = async(params: {
   });
   
   return axiosInstance.get<ISearchCoursesResponse>(`/courses/search?${queryParams.toString()}`);
+}
+
+// Notification APIs
+export const GetNotificationsApi = async() => {
+  return axiosInstance.get<IGetNotificationsResponse>('/notification/get')
+}
+
+export const MarkNotificationAsReadApi = async(id: string) => {
+  return axiosInstance.get<IUpdateNotificationResponse>(`/notification/update/${id}`)
+}
+
+export const DeleteNotificationApi = async(id: string) => {
+  return axiosInstance.delete<IDeleteNotificationResponse>(`/notification/delete/${id}`)
 }

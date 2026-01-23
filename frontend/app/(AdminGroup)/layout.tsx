@@ -34,6 +34,7 @@ import { TbDeviceDesktopAnalytics } from "react-icons/tb";
 import { CgScreenWide } from "react-icons/cg";
 import { useRouter } from "next/navigation";
 import { IoIosAnalytics } from "react-icons/io";
+import { IoNotifications } from "react-icons/io5";
 
 const AdminLayout = ({ children }: { children: ReactNode }) => {
   const { screenWidth } = useSelector((state: any) => state.UtilReducer);
@@ -57,6 +58,7 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
 
   const items: MenuItem[] = [
     getItem("Dashboard", "dashboard", <DashboardOutlined />),
+    getItem("Notifications", "notifications", <IoNotifications />),
     getItem("Data", "data", <DatabaseOutlined />, [
       getItem("Users", "users", <UserOutlined />),
       getItem("Invoices", "invoices", <PiInvoiceLight />),

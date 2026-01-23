@@ -6,7 +6,7 @@ import cron from "node-cron";
 export const Get_Notifications = AsyncWrapper(async (req, res, next) => {
   const user = req.user;
   const notifications = await NotificationModel.find({
-    userId: user?._id,
+    // userId: user?._id,
   }).sort({ createdAt: -1 });
   return res.status(200).json({
     success: true,
@@ -50,3 +50,23 @@ cron.schedule("0 0 * * *", async () => {
 
 
 
+
+export const Delete_Notification = AsyncWrapper(async (req, res, next) => {
+  const user = req?.user;
+  const notificationId = req.params?.id;
+  
+  const deletedNotification = await NotificationModel.findByIdAndDelete(notificationId);
+  if (!deletedNotification) {
+    return next(customError(400, "Failed to delete notification"));
+  }
+  
+  const notifications = await NotificationModel.find({
+    // userId: user?._id,
+  }).sort({ createdAt: -1 });
+  
+  return res.status(200).json({
+    success: true,
+    message: "Notification deleted successfully",
+    data: notifications,
+  });
+});
