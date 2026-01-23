@@ -45,7 +45,7 @@ import {
   IUploadCoursePayload,
   IUploadCourseResponse,
 } from "../types/apifn.types";
-import { ICreateOrderPayload, ICreateOrderResponse, ICourseContentResponse, IAddQuestionPayload, IAddQuestionResponse, IAddAnswerPayload, IAddAnswerResponse, IAddReviewPayload, IAddReviewResponse, IAddReviewReplyPayload, IAddReviewReplyResponse, ICourseReviewsResponse, IEditReviewPayload, IEditReviewResponse, IGetUserReviewResponse } from "../types/apifn.types";
+import { ICreateOrderPayload, ICreateOrderResponse, ICourseContentResponse, IAddQuestionPayload, IAddQuestionResponse, IAddAnswerPayload, IAddAnswerResponse, IAddReviewPayload, IAddReviewResponse, IAddReviewReplyPayload, IAddReviewReplyResponse, ICourseReviewsResponse, IEditReviewPayload, IEditReviewResponse, IGetUserReviewResponse, ISearchCoursesResponse } from "../types/apifn.types";
 import { axiosInstance } from "./config";
 import { ICreateCoursePayload } from "../(AdminGroup)/admin/create-courses/page";
 
@@ -244,4 +244,23 @@ export const EditReviewApi = async(payload: IEditReviewPayload, courseId: string
 
 export const GetUserReviewApi = async(courseId: string) => {
   return axiosInstance.get<IGetUserReviewResponse>(`/courses/get-user-review/${courseId}`)
+}
+
+// Advanced Courses Search API
+export const SearchCoursesApi = async(params: {
+  page?: number;
+  limit?: number;
+  search?: string;
+  category?: string;
+  sortBy?: 'price' | 'createdAt';
+  sortOrder?: 'asc' | 'desc';
+}) => {
+  const queryParams = new URLSearchParams();
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== '') {
+      queryParams.append(key, value.toString());
+    }
+  });
+  
+  return axiosInstance.get<ISearchCoursesResponse>(`/courses/search?${queryParams.toString()}`);
 }

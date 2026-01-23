@@ -26,11 +26,12 @@ const CourseCard = ({ course }: { course: ICourseData }) => {
           value={course.ratings}
         />
       </div>
-      <div className="flex justify-between pt-6 pb-2 ">
-        <div className="flex gap-x-2 font-bold">
-          <span>{course.price === 0 ? "Free" : `${course.price}$`}</span>
-          <span className="-mt-1 line-through text-muted-light dark:text-muted-dark">
-            {course.estimatedPrice !== 0 && course.estimatedPrice} $
+      <div className="text-center my-2 text-lg font-bold">{course.name}</div>
+      <div className="flex justify-between pt-2 pb-2 items-center">
+        <div className="flex gap-x-1 lg:gap-x-2 items-center">
+          <span className="text-3xl font-bold">{course.price === 0 ? "Free" : `$${course.price}`}</span>
+          <span className="text-lg line-through text-muted-light dark:text-muted-dark">
+            ${course.estimatedPrice !== 0 && course.estimatedPrice}
           </span>
         </div>
         <div>{course.purchased} Enrolled</div>

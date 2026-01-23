@@ -1,6 +1,6 @@
 import express from 'express'
 import { Authorize_Role, Verify_User } from '../MiddleWare/auth.js'
-import { Access_Course_Content, Add_Review, Answer_Question, Ask_Question, Delete_Course, Edit_Course, Get_All_Courses, Get_Courses, Get_Single_Course, Reply_Review, Upload_Course, VdoCipher_Video_Data, Get_Reviews, Edit_Review, Get_User_Review } from '../Controller/course.controller.js'
+import { Access_Course_Content, Add_Review, Answer_Question, Ask_Question, Delete_Course, Edit_Course, Get_All_Courses, Get_Courses, Get_Single_Course, Reply_Review, Upload_Course, VdoCipher_Video_Data, Get_Reviews, Edit_Review, Get_User_Review, Search_Courses } from '../Controller/course.controller.js'
 const router = express.Router()
 
 
@@ -8,6 +8,7 @@ router.route('/upload').post(Verify_User,Authorize_Role('admin'),Upload_Course)
 router.route('/edit/:id').patch(Verify_User,Authorize_Role('admin'),Edit_Course)
 router.route('/get-course/:id').get(Get_Single_Course)
 router.route('/get-courses').get(Get_Courses)
+router.route('/search').get(Search_Courses)
 router.route('/get-course-content/:id').get(Verify_User,Access_Course_Content)
 router.route('/get-demoVideo').post(VdoCipher_Video_Data)
 router.route('/ask-question').patch(Verify_User,Ask_Question)

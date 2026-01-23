@@ -442,3 +442,16 @@ export type IGetUserReviewResponse = IGenericApiResponse<
   } | null,
   false
 >;
+
+// Search Courses Response
+export interface ISearchCoursesResponse extends IGenericApiResponse<
+  {
+    courses: ICourseData[];
+    totalCourses: number;
+    totalPages: number;
+    currentPage: number;
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
+  },
+  false
+> {}

@@ -1,16 +1,34 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { SearchIcon } from "./ReactIcons";
 import Link from "next/link";
 import { Avatar, Button } from "antd";
 import Image from "next/image";
 import AnimatedWrapper from "@/utils/AnimatedWrapper";
 import { useSelector } from "react-redux";
+import { useRouter } from "next/navigation";
 
 function Hero() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const router = useRouter();
   const {hero} = useSelector((state:any)=>state.LayoutReducer)
   const heroImage = hero?.image ? hero?.image : '/hero-main.png'
   const heroTitle = hero?.title ? hero?.title : 'Improve Your Online Learning Experience Better Instantly'
+  
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/courses?search=${encodeURIComponent(searchQuery.trim())}`);
+    } else {
+      router.push('/courses');
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSearch(e);
+    }
+  };
   
   return (
     <div className="w-full min-h-[calc(100vh-80px)] flex flex-col md:flex-row md:items-center md:justify-center items-center mt-10 lg:mt-0">
@@ -30,16 +48,22 @@ function Hero() {
         <div className="text-wrap text-display block text-center">
             {heroTitle}
         </div>
-          <div className="flex border border-input-border-light dark:border-input-border-dark rounded-md w-full">
+          <form onSubmit={handleSearch} className="flex border border-input-border-light dark:border-input-border-dark rounded-md w-full">
             <input
               type="text"
               placeholder="Search Courses ..."
               className="input-field w-full text-ui"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={handleKeyPress}
             />
-            <div className="bg-bprimary-hover flex items-center px-2.5 md:px-3">
+            <button 
+              type="submit"
+              className="bg-bprimary-hover flex items-center px-2.5 md:px-3 hover:bg-bprimary transition-colors cursor-pointer"
+            >
               <SearchIcon />
-            </div>
-          </div>
+            </button>
+          </form>
           <div className="flex flex-col md:flex-row  gap-4 items-center">
             <Avatar.Group shape="circle">
               <Avatar style={{ backgroundColor: "#fde3cf" }}>A</Avatar>

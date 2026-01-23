@@ -562,3 +562,67 @@ export const Get_User_Review = AsyncWrapper(async (req, res, next) => {
     data: userReview || null,
   });
 });
+
+export const Search_Courses = AsyncWrapper(async (req, res, next) => {
+  const {
+    page = 1,
+    limit = 12,
+    search = "",
+    category = "",
+    sortBy = "createdAt",
+    sortOrder = "desc"
+  } = req.query;
+
+  const pageNum = parseInt(page as string);
+  const limitNum = parseInt(limit as string);
+  const skip = (pageNum - 1) * limitNum;
+
+  // Build search query
+  let searchQuery: any = {};
+
+  // Text search across multiple fields
+  if (search) {
+    searchQuery.$or = [
+      { name: { $regex: search, $options: "i" } },
+      { description: { $regex: search, $options: "i" } },
+      { tags: { $in: [new RegExp(search as string, "i")] } },
+      { category: { $regex: search, $options: "i" } },
+    ];
+  }
+
+  // Category filter
+  if (category) {
+    searchQuery.category = { $regex: category, $options: "i" };
+  }
+
+  // Build sort object
+  const sortObj: any = {};
+  sortObj[sortBy as string] = sortOrder === "asc" ? 1 : -1;
+
+  try {
+    // Get total count for pagination
+    const totalCourses = await CourseModel.countDocuments(searchQuery);
+    const totalPages = Math.ceil(totalCourses / limitNum);
+
+    // Get courses with pagination and sorting
+    const courses = await CourseModel.find(searchQuery)
+      .sort(sortObj)
+      .skip(skip)
+      .limit(limitNum)
+      .select("-courseData"); // Exclude course content for performance
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        courses,
+        totalCourses,
+        totalPages,
+        currentPage: pageNum,
+        hasNextPage: pageNum < totalPages,
+        hasPrevPage: pageNum > 1,
+      },
+    });
+  } catch (error) {
+    return next(customError(500, "Failed to search courses"));
+  }
+});
