@@ -45,7 +45,7 @@ import {
   IUploadCoursePayload,
   IUploadCourseResponse,
 } from "../types/apifn.types";
-import { ICreateOrderPayload, ICreateOrderResponse, ICourseContentResponse, IAddQuestionPayload, IAddQuestionResponse, IAddAnswerPayload, IAddAnswerResponse, IAddReviewPayload, IAddReviewResponse, IAddReviewReplyPayload, IAddReviewReplyResponse, ICourseReviewsResponse, IEditReviewPayload, IEditReviewResponse, IGetUserReviewResponse, ISearchCoursesResponse, IGetNotificationsResponse, IUpdateNotificationResponse, IDeleteNotificationResponse } from "../types/apifn.types";
+import { ICreateOrderPayload, ICreateOrderResponse, ICourseContentResponse, IAddQuestionPayload, IAddQuestionResponse, IAddAnswerPayload, IAddAnswerResponse, IAddReviewPayload, IAddReviewResponse, IAddReviewReplyPayload, IAddReviewReplyResponse, ICourseReviewsResponse, IEditReviewPayload, IEditReviewResponse, IGetUserReviewResponse, ISearchCoursesResponse, IGetNotificationsResponse, IUpdateNotificationResponse, IDeleteNotificationResponse, IGetAllReviewsResponse } from "../types/apifn.types";
 import { axiosInstance } from "./config";
 import { ICreateCoursePayload } from "../(AdminGroup)/admin/create-courses/page";
 
@@ -276,4 +276,9 @@ export const MarkNotificationAsReadApi = async(id: string) => {
 
 export const DeleteNotificationApi = async(id: string) => {
   return axiosInstance.delete<IDeleteNotificationResponse>(`/notification/delete/${id}`)
+}
+
+// Get All Reviews API (for homepage)
+export const GetAllReviewsApi = async() => {
+  return axiosInstance.get<IGetAllReviewsResponse>('/courses/get-all-reviews')
 }

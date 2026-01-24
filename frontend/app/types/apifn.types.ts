@@ -475,3 +475,22 @@ export interface IUpdateNotificationResponse extends IGenericApiResponse<INotifi
 
 // Delete Notification Response
 export interface IDeleteNotificationResponse extends IGenericApiResponse<INotification[]> {}
+
+// Get All Reviews Response (for homepage)
+export interface IGetAllReviewsResponse extends IGenericApiResponse<
+  {
+    _id: string;
+    user: {
+      _id: string;
+      name: string;
+      avatar: { url: string };
+      role: string;
+    };
+    comment: string;
+    rating: number;
+    createdAt: Date;
+    courseName: string;
+    courseId: string;
+  }[],
+  false
+> {}

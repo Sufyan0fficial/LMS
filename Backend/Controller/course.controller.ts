@@ -488,6 +488,32 @@ export const Get_Reviews = AsyncWrapper(async(req,res,next)=>{
 
 })
 
+export const Get_All_Reviews = AsyncWrapper(async(req,res,next)=>{
+  const courses = await CourseModel.find({}, 'reviews name').populate('reviews.user', 'name avatar');
+  
+  const allReviews = courses.reduce((acc: any[], course: any) => {
+    if (course.reviews && course.reviews.length > 0) {
+      const courseReviews = course.reviews.map((review: any) => ({
+        ...review.toObject(),
+        courseName: course.name,
+        courseId: course._id
+      }));
+      acc.push(...courseReviews);
+    }
+    return acc;
+  }, []);
+
+  // Sort by creation date (newest first) and limit to latest 20
+  const sortedReviews = allReviews
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    .slice(0, 20);
+
+  return res.status(200).json({
+    success: true,
+    data: sortedReviews
+  });
+})
+
 export const Edit_Review = AsyncWrapper(async (req, res, next) => {
   const courseId = req.params?.id;
   const comment = req.body?.comment;

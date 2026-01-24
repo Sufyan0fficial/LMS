@@ -1,53 +1,145 @@
+"use client";
+
 import React, { useEffect, useState } from 'react'
 import CourseCard from './CourseCard'
 import { GetCoursesApi } from '../APIs/routes'
 import { ICourseData } from '../types/apifn.types'
-import { message } from 'antd'
+import { message, Skeleton, Empty, Button } from 'antd'
 import { useRouter } from 'next/navigation'
+import Lottie from "lottie-react";
+import lottieAnimation from '@/public/loader.json'
+
 
 const Courses = () => {
-  const [loading, setloading] = useState(false)
-  const [courses,setCourses] = useState<ICourseData[]>([])
-  const [messageApi,contextHolder] = message.useMessage()
+  const [loading, setLoading] = useState(true)
+  const [courses, setCourses] = useState<ICourseData[]>([])
+  const [error, setError] = useState(false)
+  const [messageApi, contextHolder] = message.useMessage()
   const router = useRouter()
-  useEffect(()=>{
-    const fetchData = async()=>{
-      try {
-        setloading(true)
-        const res = await GetCoursesApi()
-        if(res.data.success){
-          setCourses(res.data.data)
-        }
-      } catch (error) {
-        messageApi.error('Something went wrong, Please try again later')
+
+  const fetchData = async () => {
+    try {
+      setLoading(true)
+      setError(false)
+      const res = await GetCoursesApi()
+      if (res.data.success) {
+        setCourses(res.data.data)
       }
-      finally{
-        setloading(false)
-      }
+    } catch (error) {
+      console.error('Failed to fetch courses:', error)
+      setError(true)
+      messageApi.error('Failed to load courses. Please try again later.')
+    } finally {
+      setLoading(false)
     }
+  }
+
+  useEffect(() => {
     fetchData()
-  },[])
+  }, [])
+
+  const handleRetry = () => {
+    fetchData()
+  }
+
+  if (loading) {
+    return (
+      <div>
+        <div className='text-display text-center mb-10 lg:mb-16'>
+          Upgrade Your <span className='text-accent'>Skills</span>
+        </div>
+        
+        {/* Loading Animation */}
+        <div className="flex flex-col items-center justify-center py-12">
+          <div className="w-32 h-32 mb-4">
+            <Lottie 
+              animationData={lottieAnimation} 
+              loop={true}
+              className="w-full h-full"
+            />
+          </div>
+          <p className="text-muted-light dark:text-muted-dark text-sm">
+            Loading our best courses for you...
+          </p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div>
+        <div className='text-display text-center mb-10 lg:mb-16'>
+          Upgrade Your <span className='text-accent'>Skills</span>
+        </div>
+        
+        {/* Error State */}
+        <div className="flex flex-col items-center justify-center py-12">
+          <Empty
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+            description={
+              <div className="text-center">
+                <p className="text-muted-light dark:text-muted-dark mb-4">
+                  Unable to load courses at the moment
+                </p>
+                <Button 
+                  type="primary" 
+                  onClick={handleRetry}
+                  className="bg-bprimary hover:bg-bprimary-hover"
+                >
+                  Try Again
+                </Button>
+              </div>
+            }
+          />
+        </div>
+      </div>
+    )
+  }
+
+  if (courses.length === 0) {
+    return (
+      <div>
+        <div className='text-display text-center mb-10 lg:mb-16'>
+          Upgrade Your <span className='text-accent'>Skills</span>
+        </div>
+        
+        {/* Empty State */}
+        <div className="flex flex-col items-center justify-center py-12">
+          <Empty
+            description={
+              <div className="text-center">
+                <p className="text-muted-light dark:text-muted-dark mb-4">
+                  No courses available at the moment
+                </p>
+                <p className="text-sm text-muted-light dark:text-muted-dark">
+                  Check back soon for exciting new courses!
+                </p>
+              </div>
+            }
+          />
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div>
-      {
-        contextHolder
-      }
-        <div className='text-display text-center mb-10 lg:mb-16'>
-            Upgrade Your <span className='text-accent'>Skills</span>
-        </div>
-        <div className='grid grid-cols-1 md:grid-cols-2  lg:grid-cols-3 gap-6'>
-          {
-            courses?.length > 0 ? 
-            courses.map((item,i)=>{
-              return (
-                <div key={i} onClick={()=>router.push(`/course/${item?._id}`)}>
-                  <CourseCard course={item}/>
-                </div>
-              )
-            }) :
-            ''
-          }
-        </div>
+      {contextHolder}
+      <div className='text-display text-center mb-10 lg:mb-16'>
+        Upgrade Your <span className='text-accent'>Skills</span>
+      </div>
+      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+        {courses.map((item, i) => (
+          <div 
+            key={item._id || i} 
+            onClick={() => router.push(`/course/${item._id}`)}
+            className="cursor-pointer"
+          >
+            <CourseCard course={item} />
+          </div>
+        ))}
+      </div>
     </div>
   )
 }

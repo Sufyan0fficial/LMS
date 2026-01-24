@@ -1,6 +1,6 @@
 import express from 'express'
 import { Authorize_Role, Verify_User } from '../MiddleWare/auth.js'
-import { Access_Course_Content, Add_Review, Answer_Question, Ask_Question, Delete_Course, Edit_Course, Get_All_Courses, Get_Courses, Get_Single_Course, Reply_Review, Upload_Course, VdoCipher_Video_Data, Get_Reviews, Edit_Review, Get_User_Review, Search_Courses } from '../Controller/course.controller.js'
+import { Access_Course_Content, Add_Review, Answer_Question, Ask_Question, Delete_Course, Edit_Course, Get_All_Courses, Get_Courses, Get_Single_Course, Reply_Review, Upload_Course, VdoCipher_Video_Data, Get_Reviews, Edit_Review, Get_User_Review, Search_Courses, Get_All_Reviews } from '../Controller/course.controller.js'
 const router = express.Router()
 
 
@@ -15,6 +15,7 @@ router.route('/ask-question').patch(Verify_User,Ask_Question)
 router.route('/answer-question').patch(Verify_User,Answer_Question)
 router.route('/add-review/:id').patch(Verify_User,Add_Review)
 router.route('/get-reviews/:id').get(Verify_User,Get_Reviews)
+router.route('/get-all-reviews').get(Get_All_Reviews)
 router.route('/edit-review/:id').patch(Verify_User,Edit_Review)
 router.route('/get-user-review/:id').get(Verify_User,Get_User_Review)
 router.route('/reply-review').patch(Verify_User,Authorize_Role('admin'),Reply_Review)
