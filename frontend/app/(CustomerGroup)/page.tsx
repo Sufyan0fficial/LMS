@@ -11,6 +11,7 @@ import Faqs from "./faqs/page";
 import Footer from "../components/Footer";
 import { removeCourses } from "../Redux/UserSlice";
 import { socket } from "@/socketio";
+import { Button } from "antd";
 
 interface IProps {}
 
@@ -33,6 +34,7 @@ const Page: FC<IProps> = () => {
 
   return (
     <div className="max-w-7xl w-full px-6 md:px-10 mx-auto flex flex-col gap-y-10 lg:gap-y-20">
+
       <Hero />
       <Courses />
       <Reviews />

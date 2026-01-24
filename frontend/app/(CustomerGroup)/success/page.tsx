@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Button } from "antd";
+import { socket } from "@/socketio";
 
 const Success = () => {
   const [verificationStatus, setVerificationStatus] = useState<
@@ -14,6 +15,9 @@ const Success = () => {
   useEffect(() => {
     const status = searchParams.get("status") as "success" | "failed";
     const msg = searchParams.get("message") || "";
+    if(status === 'success'){
+      socket.emit('notification')
+    }
     
     setVerificationStatus(status);
     setMessage(msg);

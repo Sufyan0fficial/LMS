@@ -42,6 +42,7 @@ import { useSelector } from "react-redux";
 import { MdReplyAll } from "react-icons/md";
 import { VscVerifiedFilled } from "react-icons/vsc";
 import Image from "next/image";
+import { socket } from "@/socketio";
 
 const { TextArea } = Input;
 
@@ -133,7 +134,6 @@ interface Review {
     createdAt: Date;
   }[];
 }
-
 
 const CourseAccess = () => {
   const [courseContent, setCourseContent] = useState<CourseSection[]>([]);
@@ -243,66 +243,66 @@ const CourseAccess = () => {
     sectionIndex: number,
     lessonIndex: number,
   ) => {
-  const handleLessonClick = (
-    lesson: LessonData,
-    sectionIndex: number,
-    lessonIndex: number,
-  ) => {
-    setCurrentVideo(lesson.url);
-    setCurrentLesson(lesson);
-    setCurrentLessonIndex({ section: sectionIndex, lesson: lessonIndex });
-  };
+    const handleLessonClick = (
+      lesson: LessonData,
+      sectionIndex: number,
+      lessonIndex: number,
+    ) => {
+      setCurrentVideo(lesson.url);
+      setCurrentLesson(lesson);
+      setCurrentLessonIndex({ section: sectionIndex, lesson: lessonIndex });
+    };
 
-  const getAllLessons = () => {
-    const allLessons: {
-      lesson: LessonData;
-      sectionIndex: number;
-      lessonIndex: number;
-    }[] = [];
-    courseContent.forEach((section, sectionIndex) => {
-      section.data.forEach((lesson, lessonIndex) => {
-        allLessons.push({ lesson, sectionIndex, lessonIndex });
+    const getAllLessons = () => {
+      const allLessons: {
+        lesson: LessonData;
+        sectionIndex: number;
+        lessonIndex: number;
+      }[] = [];
+      courseContent.forEach((section, sectionIndex) => {
+        section.data.forEach((lesson, lessonIndex) => {
+          allLessons.push({ lesson, sectionIndex, lessonIndex });
+        });
       });
-    });
-    return allLessons;
-  };
+      return allLessons;
+    };
 
-  const getCurrentLessonGlobalIndex = () => {
-    const allLessons = getAllLessons();
-    return allLessons.findIndex(
-      (item) =>
-        item.sectionIndex === currentLessonIndex.section &&
-        item.lessonIndex === currentLessonIndex.lesson,
-    );
-  };
-
-  const navigateToLesson = (direction: "prev" | "next") => {
-    const allLessons = getAllLessons();
-    const currentGlobalIndex = getCurrentLessonGlobalIndex();
-
-    let newIndex;
-    if (direction === "prev") {
-      newIndex = currentGlobalIndex > 0 ? currentGlobalIndex - 1 : 0;
-    } else {
-      newIndex =
-        currentGlobalIndex < allLessons.length - 1
-          ? currentGlobalIndex + 1
-          : allLessons.length - 1;
-    }
-
-    const targetLesson = allLessons[newIndex];
-    if (targetLesson) {
-      handleLessonClick(
-        targetLesson.lesson,
-        targetLesson.sectionIndex,
-        targetLesson.lessonIndex,
+    const getCurrentLessonGlobalIndex = () => {
+      const allLessons = getAllLessons();
+      return allLessons.findIndex(
+        (item) =>
+          item.sectionIndex === currentLessonIndex.section &&
+          item.lessonIndex === currentLessonIndex.lesson,
       );
-    }
-  };
+    };
 
-  const canNavigatePrev = () => getCurrentLessonGlobalIndex() > 0;
-  const canNavigateNext = () =>
-    getCurrentLessonGlobalIndex() < getAllLessons().length - 1;
+    const navigateToLesson = (direction: "prev" | "next") => {
+      const allLessons = getAllLessons();
+      const currentGlobalIndex = getCurrentLessonGlobalIndex();
+
+      let newIndex;
+      if (direction === "prev") {
+        newIndex = currentGlobalIndex > 0 ? currentGlobalIndex - 1 : 0;
+      } else {
+        newIndex =
+          currentGlobalIndex < allLessons.length - 1
+            ? currentGlobalIndex + 1
+            : allLessons.length - 1;
+      }
+
+      const targetLesson = allLessons[newIndex];
+      if (targetLesson) {
+        handleLessonClick(
+          targetLesson.lesson,
+          targetLesson.sectionIndex,
+          targetLesson.lessonIndex,
+        );
+      }
+    };
+
+    const canNavigatePrev = () => getCurrentLessonGlobalIndex() > 0;
+    const canNavigateNext = () =>
+      getCurrentLessonGlobalIndex() < getAllLessons().length - 1;
     setCurrentLessonIndex({ section: sectionIndex, lesson: lessonIndex });
   };
 
@@ -373,6 +373,8 @@ const CourseAccess = () => {
         contentId: currentLesson._id,
       });
       message.success("Question posted successfully!");
+      socket.emit("notification");
+
       setQuestionText("");
       fetchCourseContent(); // Refresh to get updated questions
     } catch (error: any) {
@@ -421,6 +423,8 @@ const CourseAccess = () => {
         courseId,
       );
       message.success("Review posted successfully!");
+      socket.emit('notification')
+      
       setReviewText("");
       setReviewRating(0);
       fetchReviews();
@@ -448,6 +452,8 @@ const CourseAccess = () => {
         courseId,
       );
       message.success("Review updated successfully!");
+      socket.emit('notification')
+      
       setIsEditingReview(false);
       fetchReviews();
       fetchUserReview();
@@ -743,9 +749,7 @@ const CourseAccess = () => {
                                   </Button>
                                 </div>
                               </div>
-                            ) : 
-                              
-
+                            ) : (
                               <Button
                                 size="small"
                                 type="text"
@@ -755,8 +759,7 @@ const CourseAccess = () => {
                               >
                                 Reply
                               </Button>
-                              
-                          }
+                            )}
                           </div>
                         </div>
                       </div>
@@ -828,7 +831,11 @@ const CourseAccess = () => {
                 Rate this Course
               </h3>
               <div className="flex flex-col gap-y-3">
-                <Rate allowHalf value={reviewRating} onChange={setReviewRating} />
+                <Rate
+                  allowHalf
+                  value={reviewRating}
+                  onChange={setReviewRating}
+                />
                 <TextArea
                   rows={3}
                   placeholder="Share your experience with this course..."
@@ -864,7 +871,7 @@ const CourseAccess = () => {
                   </Button>
                 )}
               </div>
-              
+
               {isEditingReview ? (
                 <div className="flex flex-col gap-y-3">
                   <Rate value={reviewRating} onChange={setReviewRating} />
@@ -885,9 +892,7 @@ const CourseAccess = () => {
                     >
                       Update Review
                     </Button>
-                    <Button onClick={handleCancelEdit}>
-                      Cancel
-                    </Button>
+                    <Button onClick={handleCancelEdit}>Cancel</Button>
                   </div>
                 </div>
               ) : (
@@ -897,7 +902,8 @@ const CourseAccess = () => {
                     {userReview.comment}
                   </p>
                   <p className="text-xs text-secondary-light dark:text-secondary-dark mt-2">
-                    Reviewed on {new Date(userReview.createdAt).toLocaleDateString()}
+                    Reviewed on{" "}
+                    {new Date(userReview.createdAt).toLocaleDateString()}
                   </p>
                 </div>
               )}
@@ -963,19 +969,15 @@ const CourseAccess = () => {
                                     className="rounded-full"
                                   />
                                 ) : (
-                                  <Avatar
-                                    icon={<UserOutlined />}
-                                    size={32}
-                                  />
+                                  <Avatar icon={<UserOutlined />} size={32} />
                                 )}
                                 <div className="flex-1">
                                   <div className="flex items-center gap-2 mb-1 justify-between">
                                     <div className="flex items-center">
-
-                                    <span className="font-medium text-primary-light dark:text-primary-dark text-sm max-w-20 overflow-hidden whitespace-nowrap text-ellipsis">
-                                      {reply.user.name}
-                                    </span>
-                                    <VscVerifiedFilled className="dark:text-accent text-bprimary shrink-0!" />
+                                      <span className="font-medium text-primary-light dark:text-primary-dark text-sm max-w-20 overflow-hidden whitespace-nowrap text-ellipsis">
+                                        {reply.user.name}
+                                      </span>
+                                      <VscVerifiedFilled className="dark:text-accent text-bprimary shrink-0!" />
                                     </div>
 
                                     <span className="text-xs text-secondary-light dark:text-secondary-dark">

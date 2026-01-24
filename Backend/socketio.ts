@@ -10,10 +10,12 @@ interface ServerToClientEvents {
   noArg: () => void;
   basicEmit: (a: number, b: string, c: Buffer) => void;
   withAck: (d: string, callback: (e: number) => void) => void;
+  newNotification : ()=>void;
 }
 
 interface ClientToServerEvents {
   hello: () => void;
+  notification: ()=>void
 }
 
 interface InterServerEvents {
@@ -54,6 +56,11 @@ export const io = new Server<
 });
 
 io.on('connection',(socket)=>{
-    console.log('connection established on server')
-    socket.emit('noArg')
+  console.log('connection eastablished on server')
+  socket.on('notification',()=>{
+    io.emit('newNotification')
+  })
+  socket.on('disconnect',()=>{
+    console.log('socket connection disconnected')
+  })
 })

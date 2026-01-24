@@ -357,7 +357,7 @@ export const Add_Review = AsyncWrapper(async (req, res, next) => {
   }
 
   await NotificationModel.create({
-  title: "New Question Asked",
+  title: "New Review Added",
   userId: user?._id,
   message: `${user?.name} give review to the course ${existingCourse?.name}`,
 });
@@ -527,7 +527,14 @@ export const Edit_Review = AsyncWrapper(async (req, res, next) => {
   course.reviews[reviewIndex].rating = rating;
   course.reviews[reviewIndex].createdAt  = new Date() as any
 
-  await course.save();
+  await course.save(); 
+
+  await NotificationModel.create({
+  title: "Review Edited",
+  userId: user?._id,
+  message: `${user?.name} has edited his review to the course ${course.name}`,
+  })
+
 
   // Recalculate average rating
   let totalSum = 0;

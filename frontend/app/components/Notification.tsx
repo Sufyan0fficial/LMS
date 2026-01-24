@@ -6,6 +6,7 @@ import {
   MarkNotificationAsReadApi,
 } from "@/app/APIs/routes";
 import { INotification } from "@/app/types/apifn.types";
+import { socket } from "@/socketio";
 import {
   Button,
   Dropdown,
@@ -22,13 +23,39 @@ import React, { useEffect, useState } from "react";
 import { IoMdNotificationsOutline } from "react-icons/io";
 import { MdDelete, MdMarkEmailRead } from "react-icons/md";
 import ReactTimeAgo from "react-time-ago";
+import en from "javascript-time-ago/locale/en";
+import ru from "javascript-time-ago/locale/ru";
+import TimeAgo from "javascript-time-ago";
 
+try {
+  TimeAgo.addDefaultLocale(en);
+  TimeAgo.addLocale(ru);
+} catch (error) {}
 const Notification = () => {
   const [notifications, setNotifications] = useState<INotification[]>([]);
   const [loading, setLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [messageApi, contextHolder] = message.useMessage();
   const [unreadCount, setUnReadCount] = useState(0)
+
+  const playNotificationSound = ()=>{
+    const audio = new Audio('/notification.m4a')
+    audio.play().catch((error)=>{
+      console.log('failed to play audio',error)
+    })
+  }
+
+  const handleNewNotification = ()=>{
+    playNotificationSound()
+    fetchNotifications()
+  }
+
+  useEffect(()=>{
+    socket.on('newNotification',handleNewNotification)
+    return ()=>{
+      socket.off('newNotification',handleNewNotification)
+    }
+  },[])
 
   const fetchNotifications = async () => {
     try {
@@ -233,7 +260,7 @@ const Notification = () => {
         <div className="relative cursor-pointer">
           <IoMdNotificationsOutline className="text-2xl md:text-3xl" />
           {unreadCount > 0 && (
-            <div className="w-3 h-3 md:w-5 md:h-5 rounded-full bg-success absolute -top-1 -right-1 flex items-center justify-center text-center">
+            <div className="w-3 h-3 md:w-5 md:h-5 max-w-max max-h-max min-w-max min-h-max rounded-full bg-success absolute -top-1 -right-1 flex items-center justify-center text-center">
               {unreadCount > 9 ? (
                 <span className="text-white text-xs font-bold pl-1">9+</span>
               ) : (
