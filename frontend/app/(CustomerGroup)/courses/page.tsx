@@ -30,6 +30,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { ICourseData } from "@/app/types/apifn.types";
 import CourseCard from "@/app/components/CourseCard";
+import Lottie from "lottie-react";
+import lottieAnimation from '@/public/loader.json'
 
 const { Search } = Input;
 const { Title, Text } = Typography;
@@ -197,8 +199,16 @@ const CoursesPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-body-light dark:bg-body-dark">
-        <Spin size="large" />
+            <div className="min-h-[calc(100vh-100px)] flex items-center justify-center bg-body-light dark:bg-body-dark">
+        <div className="text-center">
+          <div className="h-80 lg:h-100 mx-auto aspect-square ">
+            <Lottie
+              animationData={lottieAnimation} 
+              loop={true}
+              className="w-full h-full"
+            />
+          </div>
+        </div>
       </div>
     );
   }
@@ -285,7 +295,6 @@ const CoursesPage = () => {
         {/* Results Info */}
         <div className="mb-6">
           <Text className="text-secondary-light dark:text-secondary-dark">
-            {searchLoading ? <Spin size="small" className="mr-2" /> : null}
             Showing {courses.length} of {totalCourses} courses
             {searchQuery && <span> for "{searchQuery}"</span>}
             {selectedCategory && <span> in "{selectedCategory}"</span>}

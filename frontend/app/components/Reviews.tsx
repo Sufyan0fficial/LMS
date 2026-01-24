@@ -211,13 +211,7 @@ const Reviews = () => {
         <div className="text-center text-title font-medium text-bprimary">
           Hear how our courses helped students launch their careers.
         </div>
-        {error && (
-          <div className="text-center mt-4">
-            <p className="text-warning text-sm">
-              Showing sample reviews - Live reviews will load shortly
-            </p>
-          </div>
-        )}
+        
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6">

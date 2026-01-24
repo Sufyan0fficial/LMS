@@ -52,7 +52,6 @@ const Faqs = () => {
         console.error("Failed to fetch FAQs:", error);
         setError(true);
         setFaqs(fallbackFaqs);
-        messageApi.error("Using sample FAQs - Live data will load shortly");
       } finally {
         setLoading(false);
       }
