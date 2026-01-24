@@ -4,10 +4,8 @@ import React, { useEffect, useState } from 'react'
 import CourseCard from './CourseCard'
 import { GetCoursesApi } from '../APIs/routes'
 import { ICourseData } from '../types/apifn.types'
-import { message, Skeleton, Empty, Button } from 'antd'
+import { message, Skeleton, Empty, Button, Rate } from 'antd'
 import { useRouter } from 'next/navigation'
-import Lottie from "lottie-react";
-import lottieAnimation from '@/public/loader.json'
 
 
 const Courses = () => {
@@ -49,18 +47,25 @@ const Courses = () => {
           Upgrade Your <span className='text-accent'>Skills</span>
         </div>
         
-        {/* Loading Animation */}
-        <div className="flex flex-col items-center justify-center py-12">
-          <div className="w-32 h-32 mb-4">
-            <Lottie 
-              animationData={lottieAnimation} 
-              loop={true}
-              className="w-full h-full"
-            />
-          </div>
-          <p className="text-muted-light dark:text-muted-dark text-sm">
-            Loading our best courses for you...
-          </p>
+        {/* Skeleton Loading */}
+        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+          {Array(6).fill(0).map((_, i) => (
+            <div key={i} className="rounded-lg border border-border-light dark:border-border-dark w-full">
+              <Skeleton.Image  className='w-full! h-50'active style={{width:'100%', height:'100%'}}/>
+              <div className="p-6">
+                <div className="flex justify-center mb-3" >
+                  <Rate value={0} size='small' />
+                </div>
+                <div className='w-full flex justify-center'>
+
+                <Skeleton.Input className='w-3/4 ' style={{height:'25px'}} active />
+                </div>
+                <div className="flex justify-center items-center mt-4">
+                  <Skeleton.Input style={{ width: '100%', height: 70 }} className='w-full!' active  />
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     )

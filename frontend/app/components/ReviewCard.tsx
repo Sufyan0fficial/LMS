@@ -39,7 +39,7 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
       <div
         className="dark:bg-card-dark bg-card-light w-full border border-border-light dark:border-border-dark px-4 md:px-6 py-4 md:py-6 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col gap-y-3 rounded-md md:rouned-lg"
       >
-        <div className="flex justify-between items-start">
+        <div className="flex justify-between items-center">
           <div className="flex items-center gap-x-2">
             <div className=" relative w-12 h-12 md:w-16 md:h-16 shrink-0">
               <Image
