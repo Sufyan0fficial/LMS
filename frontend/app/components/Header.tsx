@@ -28,6 +28,8 @@ const Header = () => {
     console.log("active tab");
   }, [path]);
 
+  
+
   const NavItems = [
     {
       key: "home",
@@ -52,7 +54,7 @@ const Header = () => {
     {
       key: "faq",
       name: "FAQ",
-      path: "#faq",
+      path: "/#faq",
     },
   ];
 

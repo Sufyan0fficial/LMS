@@ -14,12 +14,14 @@ import { socket } from "@/socketio";
 import { Button } from "antd";
 import Lottie from "lottie-react";
 import lottieAnimation from "@/public/loader.json";
+import { useRouter, useSearchParams } from "next/navigation";
 
 interface IProps {}
 
 const Page: FC<IProps> = () => {
   const dispatch = useDispatch();
   const [initialLoading, setInitialLoading] = useState(true);
+  const router = useRouter()
 
   useEffect(() => {
     const checkInnerWidth = () => {
