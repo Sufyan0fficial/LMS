@@ -14,10 +14,10 @@ import { FaUsers } from "react-icons/fa6";
 import axios from "axios";
 import InitialPageloader from "@/app/components/initialPageloader";
 
-try {
-  TimeAgo.addLocale(en);
-  TimeAgo.addLocale(ru);
-} catch (error) {}
+// try {
+//   TimeAgo.addLocale(en);
+//   TimeAgo.addLocale(ru);
+// } catch (error) {}
 
 interface DataType {
   key: number;
@@ -115,7 +115,9 @@ const UsersPage = () => {
       key: "createdAt",
       render: (date) => 
       {
-        const d = new Date()
+        console.log('date is',date)
+        const d = new Date(date)
+        console.log('dateee',d)
        return (
         <div>
           <div className="text-sm">
@@ -123,7 +125,7 @@ const UsersPage = () => {
           </div>
           
           <div className="text-xs text-muted-light dark:text-muted-dark">
-            <ReactTimeAgo date={d} locale="en-US" />
+            {/* <ReactTimeAgo date={date} locale="en-US" /> */}
           </div>
           
         </div>

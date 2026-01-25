@@ -47,8 +47,8 @@ const OrdersAnalyticsPage = () => {
     return (
       <div className="space-y-6">
         {contextHolder}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
+        <div className="flex items-start justify-between">
+          <div className="flex items-start gap-3">
             <FaShoppingCart className="text-2xl text-accent" />
             <h1 className="text-title text-primary-light dark:text-primary-dark">
               Orders Analytics
@@ -85,8 +85,8 @@ const OrdersAnalyticsPage = () => {
     <div className="space-y-6">
       {contextHolder}
       
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
+      <div className="flex items-start justify-between">
+        <div className="flex items-start gap-3">
           <FaShoppingCart className="text-2xl text-accent" />
           <div>
             <h1 className="text-title text-primary-light dark:text-primary-dark">

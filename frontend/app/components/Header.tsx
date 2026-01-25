@@ -52,7 +52,7 @@ const Header = () => {
     {
       key: "faq",
       name: "FAQ",
-      path: "/faqs",
+      path: "#faq",
     },
   ];
 

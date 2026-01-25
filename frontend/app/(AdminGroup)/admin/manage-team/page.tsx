@@ -25,6 +25,7 @@ import {
 import { CourseData } from "@/app/data";
 import { MdDeleteOutline, MdOutlineEmail } from "react-icons/md";
 import axios from "axios";
+import InitialPageloader from "@/app/components/initialPageloader";
 
 try {
   TimeAgo.addDefaultLocale(en);
@@ -58,6 +59,7 @@ const page = () => {
   useEffect(() => {
     const getAllUsers = async () => {
       try {
+        setloading(true)
         const res = await GetAllUsers();
         if (res.data.success) {
           setUsers(res.data.data);
@@ -78,7 +80,14 @@ const page = () => {
           });
           setRowData(fieldsData);
         }
-      } catch (error) {}
+      } catch (error) {
+        if(axios.isAxiosError(error)){
+          messageApi.error(error.response?.data?.message || 'Failed to fetch teams data' )
+        }
+      }
+      finally {
+        setloading(false)
+      }
     };
     getAllUsers();
   }, []);
@@ -164,6 +173,10 @@ const page = () => {
       },
     },
   ];
+
+  if(loading){
+    return <InitialPageloader />
+  }
 
   const handleAddNewAdmin = async () => {
     try {

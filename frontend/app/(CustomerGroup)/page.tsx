@@ -13,7 +13,7 @@ import { removeCourses } from "../Redux/UserSlice";
 import { socket } from "@/socketio";
 import { Button } from "antd";
 import Lottie from "lottie-react";
-import lottieAnimation from '@/public/loader.json'
+import lottieAnimation from "@/public/loader.json";
 
 interface IProps {}
 
@@ -45,8 +45,8 @@ const Page: FC<IProps> = () => {
       <div className="min-h-[calc(100vh-100px)] flex items-center justify-center bg-body-light dark:bg-body-dark">
         <div className="text-center">
           <div className="h-80 lg:h-100 mx-auto aspect-square ">
-            <Lottie 
-              animationData={lottieAnimation} 
+            <Lottie
+              animationData={lottieAnimation}
               loop={true}
               className="w-full h-full"
             />
@@ -59,9 +59,12 @@ const Page: FC<IProps> = () => {
   return (
     <div className="max-w-7xl w-full px-6 md:px-10 mx-auto flex flex-col gap-y-10 lg:gap-y-20">
       <Hero />
-      <Courses />
+        <Courses />
       <Reviews />
+      <div id="faq">
+
       <Faqs />
+      </div>
     </div>
   );
 };

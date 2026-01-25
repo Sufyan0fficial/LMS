@@ -109,7 +109,9 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
         collapsible
         collapsed={collapsed}
         onCollapse={(value) => setCollapsed(value)}
-        className="h-full!"
+        style={{minHeight:'100% !important'}}
+        className="h-full! min-h-screen! dark:bg-card-dark! bg-card-light! max-h-screen! overflow-y-auto! hide-scrollbar"
+        
       >
         <div className="demo-logo-vertical" />
         <Menu
@@ -138,9 +140,8 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
           <ThemeChanger />
           <Notification />
         </div>
-        <div className="max-w-7xl md:px-10 px-3 mx-auto w-full!">{children}</div>
+        <div className="max-w-7xl md:px-10 px-3 mx-auto w-full! hide-scrollbar pb-10">{children}</div>
         <div></div>
-      <div>Here comes the footer</div>
       </div>
     </div>
   );
