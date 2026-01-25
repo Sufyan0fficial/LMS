@@ -95,7 +95,7 @@ const Profile = (props: Props) => {
     <div className="w-full">
       {contextHolder}
       <div className="max-w-7xl mx-auto  flex">
-        <div className="min-h-[calc(100vh-120px)] max-h-[100vh-120px] hide-scrollbar flex flex-col gap-y-6 md:gap-y-8 w-max md:w-1/4 md:justify-center md:items-stretch items-center  pt-10 border dark:border-border-dark border-border-light dark:bg-section-dark bg-section-light">
+        <div className="min-h-[calc(100vh-120px)] max-h-[100vh-120px] hide-scrollbar flex flex-col gap-y-6 md:gap-y-8 w-max md:w-1/4 md:justify-center md:items-stretch items-center  pt-10 border dark:border-border-dark border-border-light dark:bg-section-dark bg-section-light shrink-0!">
           {sideBarData?.length > 0 &&
             sideBarData.map((item, index) => {
               return  (
@@ -145,7 +145,7 @@ const Profile = (props: Props) => {
               <ChangePassword />
             </div>
           ) : activeMenu === "courses" ? (
-            <div className="w-full mt-10">
+            <div className="w-full flex flex-col items-center mt-10  h-full!">
               <EnrolledCourses />
             </div>
           ) : (
