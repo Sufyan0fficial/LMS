@@ -109,7 +109,7 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
         collapsible
         collapsed={collapsed}
         onCollapse={(value) => setCollapsed(value)}
-        className=""
+        className="h-full!"
       >
         <div className="demo-logo-vertical" />
         <Menu

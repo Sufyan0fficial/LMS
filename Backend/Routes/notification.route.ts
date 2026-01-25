@@ -5,8 +5,8 @@ const router = express.Router()
 import cron from 'node-cron'
 import { NotificationModel } from '../Model/notification.model.js'
 
-router.route('/get').get(Verify_User,Authorize_Role('admin'), Get_Notifications)
-router.route('/update/:id').get(Verify_User,Authorize_Role('admin'),Update_Notification)
-router.route('/delete/:id').delete(Verify_User,Authorize_Role('admin'),Delete_Notification)
+router.route('/get').get(Verify_User,Get_Notifications)
+router.route('/update/:id').get(Verify_User,Update_Notification)
+router.route('/delete/:id').delete(Verify_User,Delete_Notification)
 
 export default router

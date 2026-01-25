@@ -18,9 +18,9 @@ router.route('/get-reviews/:id').get(Verify_User,Get_Reviews)
 router.route('/get-all-reviews').get(Get_All_Reviews)
 router.route('/edit-review/:id').patch(Verify_User,Edit_Review)
 router.route('/get-user-review/:id').get(Verify_User,Get_User_Review)
-router.route('/reply-review').patch(Verify_User,Authorize_Role('admin'),Reply_Review)
-router.route('/get-all-courses').get(Verify_User,Authorize_Role('admin'),Get_All_Courses)
-router.route('/delete-course/:id').delete(Verify_User,Authorize_Role('admin'),Delete_Course)
+router.route('/reply-review').patch(Verify_User,Reply_Review)
+router.route('/get-all-courses').get(Verify_User,Get_All_Courses)
+router.route('/delete-course/:id').delete(Verify_User,Delete_Course)
 
 
 export default router

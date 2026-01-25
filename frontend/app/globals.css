@@ -106,6 +106,50 @@
   background-color: rgba(79, 70, 229, 0.05);
 }
 
+/* Dashboard table styles */
+.dashboard-table .ant-table-thead > tr > th {
+  background-color: var(--color-section-light);
+  font-weight: 600;
+  border-bottom: 2px solid var(--color-border-light);
+}
+
+.dark .dashboard-table .ant-table-thead > tr > th {
+  background-color: var(--color-section-dark);
+  color: var(--color-primary-dark);
+  border-bottom: 2px solid var(--color-border-dark);
+}
+
+.dashboard-table .ant-table-tbody > tr:hover > td {
+  background-color: var(--color-bprimary-soft);
+}
+
+.dark .dashboard-table .ant-table-tbody > tr:hover > td {
+  background-color: rgba(79, 70, 229, 0.05);
+}
+
+/* Chart container improvements */
+.recharts-wrapper {
+  font-family: var(--font-poppins);
+}
+
+.recharts-tooltip-wrapper {
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+}
+
+/* Stats card animations */
+.ant-card {
+  transition: all 0.3s ease;
+}
+
+.ant-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.dark .ant-card:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
 @theme inline {
   /* Brand/Primary Color */
   --color-bprimary: #4f46e5;
