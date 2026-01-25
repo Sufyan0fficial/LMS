@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Rate, Table, TableProps, Tooltip } from "antd";
+import { Button, message, Rate, Table, TableProps, Tooltip } from "antd";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import TimeAgo from "javascript-time-ago";
@@ -11,6 +11,8 @@ import { GetAllCoursesApi, GetAllUsers } from "@/app/APIs/routes";
 import { ICourseData, IUser } from "@/app/types/apifn.types";
 import { CourseData } from "@/app/data";
 import { MdDeleteOutline, MdOutlineEmail } from "react-icons/md";
+import axios from "axios";
+import InitialPageloader from "@/app/components/initialPageloader";
 
 try {
   TimeAgo.addDefaultLocale(en);
@@ -30,10 +32,13 @@ const page = () => {
   const { screenWidth } = useSelector((state: any) => state.UtilReducer);
   const [users, setUsers] = useState<IUser[]>([]);
   const [rowData, setRowData] = useState<DataType[]>([]);
+  const [loading, setloading] = useState(false);
+  const [messageApi, contextHolder] = message.useMessage();
 
   useEffect(() => {
     const getAllUsers = async () => {
       try {
+        setloading(true);
         const res = await GetAllUsers();
         if (res.data.success) {
           setUsers(res.data.data);
@@ -50,7 +55,16 @@ const page = () => {
           });
           setRowData(fieldsData);
         }
-      } catch (error) {}
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+            messageApi.error(
+              error.response?.data?.message ||
+                "Please check your internet connection",
+            );
+        }
+      } finally {
+        setloading(false);
+      }
     };
     getAllUsers();
   }, []);
@@ -109,7 +123,7 @@ const page = () => {
     {
       key: "actions",
       title: "Actions",
-      render: (_,{email}) => {
+      render: (_, { email }) => {
         return (
           <div className="flex gap-3">
             <MdDeleteOutline
@@ -119,7 +133,7 @@ const page = () => {
             />
             <a
               href={`mailto:${email}`}
-            //   target="_blank"
+              //   target="_blank"
             >
               <MdOutlineEmail
                 color="green"
@@ -133,8 +147,13 @@ const page = () => {
     },
   ];
 
+  if (loading) {
+    return <InitialPageloader />;
+  }
+
   return (
     <div className="w-full overflow-x-auto border border-border-light dark:border-border-dark">
+      {contextHolder}
       <Table<DataType>
         columns={columns}
         dataSource={rowData}

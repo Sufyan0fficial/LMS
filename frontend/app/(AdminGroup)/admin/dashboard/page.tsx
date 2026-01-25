@@ -26,6 +26,7 @@ import en from "javascript-time-ago/locale/en";
 import ru from "javascript-time-ago/locale/ru";
 import { FaUsers } from "react-icons/fa6";
 import Link from "next/link";
+import InitialPageloader from "@/app/components/initialPageloader";
 
 try {
   TimeAgo.addDefaultLocale(en);
@@ -122,11 +123,13 @@ const Dashboard = () => {
   const [rowData, setRowData] = useState<DataType[]>();
   const [totalUsers, setTotalUsers] = useState(0);
   const [totalOrders, setTotalOrders] = useState(0);
+  const [loading, setloading] = useState(false)
   console.log("row data is", rowData);
   const [messageApi, contextHolder] = message.useMessage();
   useEffect(() => {
     const getUsersAnalytics = async () => {
       try {
+        setloading(true)
         const res = await GetUsersAnalyticsApi();
         const ordersRes = await GetAllOrders();
         const ordersAna = await GetOrdersAnalyticsApi();
@@ -167,7 +170,8 @@ const Dashboard = () => {
               : [];
           setRowData(data);
         }
-      } catch (error) {
+      }
+       catch (error) {
         if (axios.isAxiosError(error)) {
           messageApi.error(
             error.response?.data?.message ||
@@ -175,9 +179,16 @@ const Dashboard = () => {
           );
         }
       }
+      finally {
+        setloading(false)
+      }
     };
     getUsersAnalytics();
   }, []);
+
+  if(loading){
+    return <InitialPageloader />
+  }
   return (
     <div className="flex flex-col gap-y-10">
       <div className="flex flex-col lg:flex-row gap-6 w-full lg:items-stretch">
