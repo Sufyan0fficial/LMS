@@ -11,6 +11,7 @@ import ReactTimeAgo from "react-time-ago";
 import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en";
 import ru from "javascript-time-ago/locale/ru";
+import InitialPageloader from "@/app/components/initialPageloader";
 
 try {
   TimeAgo.addDefaultLocale(en);
@@ -87,17 +88,14 @@ const NotificationsPage = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-bprimary"></div>
-      </div>
+      <InitialPageloader />
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 min-w-max">
       {contextHolder}
       
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <IoNotifications className="text-2xl text-accent" />

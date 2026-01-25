@@ -87,6 +87,25 @@
   }
 }
 
+/* Invoice table styles */
+.invoice-table .ant-table-thead > tr > th {
+  background-color: var(--color-bprimary-soft);
+  font-weight: 600;
+}
+
+.dark .invoice-table .ant-table-thead > tr > th {
+  background-color: rgba(79, 70, 229, 0.1);
+  color: var(--color-primary-dark);
+}
+
+.invoice-table .ant-table-tbody > tr:hover > td {
+  background-color: var(--color-bprimary-soft);
+}
+
+.dark .invoice-table .ant-table-tbody > tr:hover > td {
+  background-color: rgba(79, 70, 229, 0.05);
+}
+
 @theme inline {
   /* Brand/Primary Color */
   --color-bprimary: #4f46e5;
