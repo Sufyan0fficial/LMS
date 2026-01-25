@@ -128,7 +128,7 @@ const EnrolledCourses = () => {
   }
 
   return (
-    <div className="w-full">
+    <div className="w-full lg:p-6">
       {contextHolder}
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-title text-primary-light dark:text-primary-dark">

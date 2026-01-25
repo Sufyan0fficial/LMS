@@ -94,8 +94,8 @@ const Profile = (props: Props) => {
   return (
     <div className="w-full">
       {contextHolder}
-      <div className="max-w-7xl mx-auto  flex">
-        <div className="min-h-[calc(100vh-120px)] max-h-[100vh-120px] hide-scrollbar flex flex-col gap-y-6 md:gap-y-8 w-max md:w-1/4 md:justify-center md:items-stretch items-center  pt-10 border dark:border-border-dark border-border-light dark:bg-section-dark bg-section-light shrink-0!">
+      <div className="max-w-7xl mx-auto  flex min-h-[calc(100vh-90px)] max-h-[calc(100vh-90px)]">
+        <div className=" hide-scrollbar flex flex-col gap-y-6 md:gap-y-8 w-max md:w-1/4 md:justify-center md:items-stretch items-center  pt-10 border dark:border-border-dark border-border-light dark:bg-section-dark bg-section-light shrink-0!">
           {sideBarData?.length > 0 &&
             sideBarData.map((item, index) => {
               return  (
@@ -135,7 +135,7 @@ const Profile = (props: Props) => {
               )
             })}
         </div>
-        <div className="grow overflow-y-auto px-3">
+        <div className="grow overflow-y-auto px-3 hide-scrollbar">
           {activeMenu === "my-account" ? (
             <div className="w-full flex justify-center mt-10 md:items-center  h-full">
               <Account />

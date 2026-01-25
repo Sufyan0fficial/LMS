@@ -43,6 +43,7 @@ import { MdReplyAll } from "react-icons/md";
 import { VscVerifiedFilled } from "react-icons/vsc";
 import Image from "next/image";
 import { socket } from "@/socketio";
+import InitialPageloader from "@/app/components/initialPageloader";
 
 const { TextArea } = Input;
 
@@ -495,9 +496,7 @@ const CourseAccess = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-body-light dark:bg-body-dark">
-        <Spin size="large" />
-      </div>
+      <InitialPageloader />
     );
   }
 

@@ -38,7 +38,7 @@ import { IoNotifications } from "react-icons/io5";
 
 const AdminLayout = ({ children }: { children: ReactNode }) => {
   const { screenWidth } = useSelector((state: any) => state.UtilReducer);
-  const [collapsed, setCollapsed] = useState(true);
+  const [collapsed, setCollapsed] = useState(false);
   const [selectedKey, setselectedKey] = useState("dashboard");
   console.log('selected key is',selectedKey)
   const router = useRouter()
@@ -107,11 +107,9 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
         // breakpoint="lg"
         // collapsedWidth="0"
         collapsible
-        collapsedWidth={screenWidth < 768 ? "60" : "85"}
-        defaultCollapsed={false}
         collapsed={collapsed}
         onCollapse={(value) => setCollapsed(value)}
-        className="min-h-full"
+        className=""
       >
         <div className="demo-logo-vertical" />
         <Menu
