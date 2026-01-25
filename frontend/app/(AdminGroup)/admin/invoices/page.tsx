@@ -239,11 +239,11 @@ const InvoicesPage = () => {
       {contextHolder}
       
       {/* Header */}
-      <div className="flex items-center justify-between max-w-full overflow-x-auto pb-6">
-        <div className="flex items-center gap-3">
+      <div className="flex items-start justify-between max-w-full overflow-x-auto pb-6 gap-2">
+        <div className="flex items-start  gap-3">
           <FaFileInvoice className="text-2xl text-accent" />
           <div>
-            <h1 className="text-title text-primary-light dark:text-primary-dark">
+            <h1 className="text-title text-primary-light dark:text-primary-dark min-w-max">
               Invoices Management
             </h1>
             <p className="text-sm text-muted-light dark:text-muted-dark">
