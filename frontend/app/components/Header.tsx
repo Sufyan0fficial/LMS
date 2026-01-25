@@ -21,14 +21,59 @@ const Header = () => {
   const path = usePathname();
   const { user } = useSelector((state: any) => state.UserReducer);
   const { screenWidth } = useSelector((state: any) => state.UtilReducer);
+  const router = useRouter();
 
   useEffect(() => {
     const activeTab = path.split("/")[1];
-    setActiveItem(activeTab ? activeTab : "home");
+    const hash = window.location.hash;
+    
+    if (path === "/" && hash === "#faq") {
+      setActiveItem("faq");
+    } else {
+      setActiveItem(activeTab ? activeTab : "home");
+    }
     console.log("active tab");
   }, [path]);
 
-  
+  // Listen for hash changes to update active item
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash;
+      if (path === "/" && hash === "#faq") {
+        setActiveItem("faq");
+      } else if (path === "/" && !hash) {
+        setActiveItem("home");
+      }
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, [path]);
+
+  const handleNavigation = (item: any) => {
+    if (item.key === 'faq') {
+      // If already on home page, just scroll to FAQ
+      if (path === '/') {
+        const faqElement = document.getElementById('faq');
+        if (faqElement) {
+          faqElement.scrollIntoView({ 
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+        // Update URL hash
+        // window.history.pushState(null, '', '/#faq');
+        setActiveItem('faq');
+      } else {
+        // Navigate to home page with hash
+        router.push('/#faq');
+      }
+    } else {
+      router.push(item.path);
+    }
+    // Close sidebar on mobile
+    setopensidebar(false);
+  };
 
   const NavItems = [
     {
@@ -62,7 +107,6 @@ const Header = () => {
     setOpenLogin(open);
   };
 
-  const router = useRouter();
   return (
     <div className="w-full border-b-[0.2px] border-gray-300 dark:border-gray-700 bg-section-light dark:bg-section-dark ">
       <div className="max-w-7xl px-4 md:px-10 mx-auto flex items-center h-20 justify-between">
@@ -81,7 +125,7 @@ const Header = () => {
                 className={`cursor-pointer ${
                   item.key === activeItem ? "text-accent" : ""
                 }`}
-                onClick={() => router.push(`${item.path}`)}
+                onClick={() => handleNavigation(item)}
               >
                 {item?.name}
               </div>
@@ -138,8 +182,8 @@ const Header = () => {
                   return (
                     <div
                       key={item.key}
-                      onClick={() => router.push(item.path)}
-                      className={`${
+                      onClick={() => handleNavigation(item)}
+                      className={`cursor-pointer ${
                         item.key === activeItem ? "text-accent" : ""
                       }`}
                     >

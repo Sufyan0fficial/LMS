@@ -21,7 +21,17 @@ interface IProps {}
 const Page: FC<IProps> = () => {
   const dispatch = useDispatch();
   const [initialLoading, setInitialLoading] = useState(true);
-  const router = useRouter()
+  const router = useRouter();
+
+  const scrollToFaq = () => {
+    const faqElement = document.getElementById('faq');
+    if (faqElement) {
+      faqElement.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  };
 
   useEffect(() => {
     const checkInnerWidth = () => {
@@ -34,6 +44,13 @@ const Page: FC<IProps> = () => {
     // Simulate initial page load time
     const timer = setTimeout(() => {
       setInitialLoading(false);
+      
+      // Check for hash after loading is complete
+      if (window.location.hash === '#faq') {
+        setTimeout(() => {
+          scrollToFaq();
+        }, 100);
+      }
     }, 1000);
 
     return () => {
@@ -41,6 +58,18 @@ const Page: FC<IProps> = () => {
       clearTimeout(timer);
     };
   }, [dispatch]);
+
+  // Listen for hash changes
+  useEffect(() => {
+    const handleHashChange = () => {
+      if (window.location.hash === '#faq' && !initialLoading) {
+        scrollToFaq();
+      }
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, [initialLoading]);
 
   if (initialLoading) {
     return (
@@ -61,11 +90,10 @@ const Page: FC<IProps> = () => {
   return (
     <div className="max-w-7xl w-full px-6 md:px-10 mx-auto flex flex-col gap-y-10 lg:gap-y-20">
       <Hero />
-        <Courses />
+      <Courses />
       <Reviews />
       <div id="faq">
-
-      <Faqs />
+        <Faqs />
       </div>
     </div>
   );
