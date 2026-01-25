@@ -11,6 +11,7 @@ import { div } from "motion/react-client";
 import { Button, message, Modal, Spin, Tooltip } from "antd";
 import Account from "../../components/ProfileComponents/Account";
 import ChangePassword from "../../components/ProfileComponents/ChangePassword";
+import EnrolledCourses from "../../components/ProfileComponents/EnrolledCourses";
 import { redirect, useRouter } from "next/navigation";
 import { LogoutUser } from "../../APIs/routes";
 import { signOut } from "next-auth/react";
@@ -142,6 +143,10 @@ const Profile = (props: Props) => {
           ) : activeMenu === "change-password" ? (
             <div className="w-full flex justify-center mt-10 md:items-center  h-full">
               <ChangePassword />
+            </div>
+          ) : activeMenu === "courses" ? (
+            <div className="w-full mt-10">
+              <EnrolledCourses />
             </div>
           ) : (
             activeMenu === 'admin-dashboard' ? 

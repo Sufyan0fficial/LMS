@@ -1,5 +1,5 @@
 import express from 'express'
-import { Activate_User, Login_User, Logout_User, Refresh_AccessToken, User_Profile, User_Registration,Update_Profile, Update_Avatar, update_Password, Get_All_Users, Update_User_Role, Delete_User, Resend_VerificationCode, Forget_Password, Reset_Password, Social_Oauth } from "../Controller/authuser.controller.js";
+import { Activate_User, Login_User, Logout_User, Refresh_AccessToken, User_Profile, User_Registration,Update_Profile, Update_Avatar, update_Password, Get_All_Users, Update_User_Role, Delete_User, Resend_VerificationCode, Forget_Password, Reset_Password, Social_Oauth, Get_Enrolled_Courses } from "../Controller/authuser.controller.js";
 import { Authorize_Role, Verify_User } from '../MiddleWare/auth.js';
 const router = express.Router()
 
@@ -14,6 +14,7 @@ router.route('/reset-password').post(Reset_Password)
 router.route('/logout').get(Verify_User,Logout_User)
 router.route('/refresh-token').get(Refresh_AccessToken)
 router.route('/me').get(Verify_User,User_Profile)   
+router.route('/enrolled-courses').get(Verify_User,Get_Enrolled_Courses)   
 router.route('/update-profile').post(Verify_User,Update_Profile)
 router.route('/update-password').patch(Verify_User,update_Password)
 router.route('/update-avatar').patch(Verify_User,Update_Avatar)

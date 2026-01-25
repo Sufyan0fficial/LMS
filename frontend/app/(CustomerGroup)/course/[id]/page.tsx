@@ -23,6 +23,7 @@ import VideoPlayer from "@/app/components/AdminComponents/VideoPlayer";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import InitialPageloader from "@/app/components/initialPageloader";
 
 const CourseDetails = ({ params }: { params: Promise<{ id: string }> }) => {
   const [courseId, setCourseId] = useState<string>("");
@@ -65,9 +66,7 @@ const CourseDetails = ({ params }: { params: Promise<{ id: string }> }) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-body-light dark:bg-body-dark">
-        <Spin size="large" />
-      </div>
+      <InitialPageloader />
     );
   }
 
@@ -248,7 +247,7 @@ const CourseDetails = ({ params }: { params: Promise<{ id: string }> }) => {
               {/* Pricing */}
               <div className="bg-card-light dark:bg-card-dark rounded-lg p-6 border border-border-light dark:border-border-dark">
                 {isEnrolled ? (
-                  <span className="text-3xl font-bold text-primary-light dark:text-primary-dark">
+                  <span className="text-3xl font-bold text-primary-light dark:text-primary-dark ">
                     Enrolled
                   </span>
                 ) : (
@@ -273,7 +272,7 @@ const CourseDetails = ({ params }: { params: Promise<{ id: string }> }) => {
                     type="primary"
                     size="large"
                     block
-                    className="w-full border-none mb-4"
+                    className="w-full border-none mb-4 mt-2"
                     onClick={()=>router.push(`/course-access/${courseId}`)}
                   >
                     Get Into Course

@@ -13,6 +13,7 @@ import { redisClient } from "../Redis/init.redis.js";
 import cloudinary from "cloudinary";
 import crypto from "crypto";
 import { GetProfileData } from "../../frontend/app/APIs/routes.js";
+import { CourseModel } from "../Model/course.model.js";
 
 const __filename = fileURLToPath(import.meta.url);
 export const __dirname = path.dirname(__filename);
@@ -443,5 +444,23 @@ export const Delete_User = AsyncWrapper(async (req, res, next) => {
     success: true,
     message: "User Deleted successfully",
     data: users,
+  });
+});
+export const Get_Enrolled_Courses = AsyncWrapper(async (req, res, next) => {
+  const user = req.user;
+  if (!user?.courses || user.courses.length === 0) {
+    return res.status(200).json({
+      success: true,
+      data: [],
+    });
+  }
+
+  const enrolledCourses = await CourseModel.find({
+    _id: { $in: user.courses }
+  }).select('name description price thumbnail tags level category ratings purchased createdAt');
+
+  return res.status(200).json({
+    success: true,
+    data: enrolledCourses,
   });
 });

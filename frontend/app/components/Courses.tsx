@@ -6,6 +6,7 @@ import { GetCoursesApi } from '../APIs/routes'
 import { ICourseData } from '../types/apifn.types'
 import { message, Skeleton, Empty, Button, Rate } from 'antd'
 import { useRouter } from 'next/navigation'
+import CardSkeleton from './CardSkeleton';
 
 
 const Courses = () => {
@@ -50,20 +51,8 @@ const Courses = () => {
         {/* Skeleton Loading */}
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
           {Array(6).fill(0).map((_, i) => (
-            <div key={i} className="rounded-lg border border-border-light dark:border-border-dark w-full">
-              <Skeleton.Image  className='w-full! h-50'active style={{width:'100%', height:'100%'}}/>
-              <div className="p-6">
-                <div className="flex justify-center mb-3" >
-                  <Rate value={0} size='small' />
-                </div>
-                <div className='w-full flex justify-center'>
-
-                <Skeleton.Input className='w-3/4 ' style={{height:'25px'}} active />
-                </div>
-                <div className="flex justify-center items-center mt-4">
-                  <Skeleton.Input style={{ width: '100%', height: 70 }} className='w-full!' active  />
-                </div>
-              </div>
+            <div key={i}>
+              <CardSkeleton />
             </div>
           ))}
         </div>

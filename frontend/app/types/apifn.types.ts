@@ -494,3 +494,5 @@ export interface IGetAllReviewsResponse extends IGenericApiResponse<
   }[],
   false
 > {}
+// Get Enrolled Courses Response
+export interface IGetEnrolledCoursesResponse extends IGenericApiResponse<ICourseData[], false> {}
