@@ -62,7 +62,6 @@ const Header = () => {
           });
         }
         // Update URL hash
-        // window.history.pushState(null, '', '/#faq');
         setActiveItem('faq');
       } else {
         // Navigate to home page with hash
@@ -70,6 +69,7 @@ const Header = () => {
       }
     } else {
       router.push(item.path);
+      setActiveItem(item.key)
     }
     // Close sidebar on mobile
     setopensidebar(false);
