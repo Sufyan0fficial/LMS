@@ -127,6 +127,44 @@
   background-color: rgba(79, 70, 229, 0.05);
 }
 
+/* Users table styles */
+.users-table .ant-table-thead > tr > th {
+  background-color: var(--color-section-light);
+  font-weight: 600;
+}
+
+.dark .users-table .ant-table-thead > tr > th {
+  background-color: var(--color-section-dark);
+  color: var(--color-primary-dark);
+}
+
+.users-table .ant-table-tbody > tr:hover > td {
+  background-color: var(--color-bprimary-soft);
+}
+
+.dark .users-table .ant-table-tbody > tr:hover > td {
+  background-color: rgba(79, 70, 229, 0.05);
+}
+
+/* Courses table styles */
+.courses-table .ant-table-thead > tr > th {
+  background-color: var(--color-section-light);
+  font-weight: 600;
+}
+
+.dark .courses-table .ant-table-thead > tr > th {
+  background-color: var(--color-section-dark);
+  color: var(--color-primary-dark);
+}
+
+.courses-table .ant-table-tbody > tr:hover > td {
+  background-color: var(--color-bprimary-soft);
+}
+
+.dark .courses-table .ant-table-tbody > tr:hover > td {
+  background-color: rgba(79, 70, 229, 0.05);
+}
+
 /* Chart container improvements */
 .recharts-wrapper {
   font-family: var(--font-poppins);
