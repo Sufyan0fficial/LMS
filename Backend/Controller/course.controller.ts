@@ -6,7 +6,7 @@ import {
 } from "../Model/course.model.js";
 import cloudinary from "cloudinary";
 import { customError } from "../Utils/customError.js";
-import { redisClient } from "../Redis/init.redis.js";
+import { getCache, setCache, deleteCache, deleteCachePattern } from "../Utils/redis.cache.js";
 import mongoose from "mongoose";
 import { __dirname } from "./authuser.controller.js";
 import path from "path";
@@ -26,6 +26,7 @@ export const Upload_Course = AsyncWrapper(async (req, res, next) => {
       url: Cloud.secure_url,
   }
   const response = await CourseModel.create(courseData);
+  await deleteCache('courses:all');
   return res.status(200).json({
     message: "Course Uploaded successfully",
     success: true,
@@ -72,6 +73,7 @@ export const Edit_Course = AsyncWrapper(async (req, res, next) => {
     RequestedChanges,
     { new: true }
   );
+  await deleteCache(`course:${id}`, 'courses:all');
   return res.status(201).json({
     success: true,
     message: "Course updated successfully",
@@ -85,55 +87,44 @@ export const Get_Single_Course = AsyncWrapper(
     if (!id) {
       return next(customError(400, "Failed to fetch requested Course"));
     }
-    // const isRedisAvailable = (await redisClient.get(id)) as any;
-    // if (isRedisAvailable) {
-    //   const parsedData = JSON.parse(isRedisAvailable);
-    //   if (Object.keys(parsedData).length > 0) {
-    //     console.log("redis hitting");
-    //     return res.status(200).json({
-    //       data: parsedData,
-    //       success: true,
-    //     });
-    //   }
-    // } 
-    // else {
-      console.log("db hitting");
+    
+    const cached = await getCache(`course:${id}`);
+    if (cached) {
+      return res.status(200).json({
+        data: cached,
+        success: true,
+      });
+    }
+    
     const Course = await CourseModel.findById(id).select(
       "-courseData.data.suggestion -courseData.data.questions "
     );
-    // await redisClient.set(id, JSON.stringify(Course));
+    await setCache(`course:${id}`, Course);
     return res.status(200).json({
       data: Course,
       success: true,
     });
   }
-  // }
 );
 
-export const Get_Courses = AsyncWrapper(async (req, res, next) => 
-  {
-  // const isRedisAvailable = (await redisClient.get("allCourses")) as any;
-  // const parsedData = JSON.parse(isRedisAvailable);
-  // if (parsedData?.length > 0) {
-  //   console.log("redis hitting");
-  //   return res.status(200).json({
-  //     data: parsedData,
-  //     success: true,
-  //   });
-  // }
-  //  else {
-    console.log("db hitting");
+export const Get_Courses = AsyncWrapper(async (req, res, next) => {
+  const cached = await getCache('courses:all');
+  if (cached) {
+    return res.status(200).json({
+      data: cached,
+      success: true,
+    });
+  }
+  
   const Courses = await CourseModel.find().select(
     "-courseData.data.link -courseData.data.suggestion -courseData.data.questions -courseData.data.url"
   );
-  await redisClient.set("allCourses", JSON.stringify(Courses));
+  await setCache('courses:all', Courses);
   return res.status(200).json({
     data: Courses,
     success: true,
   });
-  }
-// }
-)
+})
 
 export const Access_Course_Content = AsyncWrapper(async (req, res, next) => {
   const courseId = req.params?.id;
@@ -199,6 +190,7 @@ export const Ask_Question = AsyncWrapper(async (req, res, next) => {
   if (!updatedCourse) {
     return next(customError(400,'Failed to post question !'))
   }
+  await deleteCache(`course:${courseId}`, 'courses:all');
 
   const courseSection = updatedCourse?.courseData.find((section: any) => 
     section.data.some((item: any) => item._id.toString() === contentId)
@@ -244,6 +236,7 @@ export const Answer_Question = AsyncWrapper(async (req, res, next) => {
       ],
     }
   );
+  await deleteCache(`course:${courseId}`, 'courses:all');
   
   const TargetedQuestion = await CourseModel.aggregate([
     {
@@ -351,10 +344,10 @@ export const Add_Review = AsyncWrapper(async (req, res, next) => {
     { new: true, runValidators: true }
   );
 
-  
   if (!addReview) {
     return next(customError(400, "Failed to add review"));
   }
+  await deleteCache(`course:${courseId}`, 'courses:all');
 
   await NotificationModel.create({
   title: "New Review Added",
@@ -389,6 +382,7 @@ export const Add_Review = AsyncWrapper(async (req, res, next) => {
   if (!addReview) {
     return next(customError(400, "Failed to add review"));
   }
+  await setCache(`course:${courseId}`, Course);
   return res.status(200).json({
     success: true,
     message: "Review added successfully",
@@ -421,6 +415,7 @@ export const Reply_Review = AsyncWrapper(async (req, res, next) => {
   if (!Course) {
     return next(customError(400, "Failed to post your reply!"));
   }
+  await deleteCache(`course:${courseId}`, 'courses:all');
   return res.status(200).json({
     messsage: "Your reply has been posted successfully",
     success: true,
@@ -438,13 +433,13 @@ export const Get_All_Courses = AsyncWrapper(async (req, res, next) => {
 
 export const Delete_Course = AsyncWrapper(async (req, res, next) => {
   const courseId = req.params?.id;
-  console.log("course id is", courseId);
   const courseDeleted = await CourseModel.findByIdAndDelete(courseId);
-  await redisClient.del(courseId);
+  await deleteCache(`course:${courseId}`, 'courses:all');
   if (!courseDeleted) {
     return next(customError(400, "Failed to delete requested Course"));
   }
   const courses = await CourseModel.find({});
+  await setCache('courses:all', courses);
   return res.status(200).json({
     success: true,
     message: "Course Deleted successfully",
@@ -574,6 +569,7 @@ export const Edit_Review = AsyncWrapper(async (req, res, next) => {
   const avgRating = totalSum / course.reviews.length;
   course.ratings = avgRating;
   await course.save();
+  await deleteCache(`course:${courseId}`, 'courses:all');
 
   return res.status(200).json({
     success: true,
