@@ -164,7 +164,63 @@ export const Login_User = AsyncWrapper(async (req, res, next) => {
     );
   }
 
+  // Cache user session
+  // await CacheService.cacheUserSession(RegisteredUser._id.toString(), RegisteredUser);
+
   SendCookie(RegisteredUser, 200, res);
+});
+
+export const Admin_Login = AsyncWrapper(async (req, res, next) => {
+  const { email, password } = req.body;
+
+  // Get admin credentials from environment variables
+  const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
+  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+
+  if (!ADMIN_EMAIL || !ADMIN_PASSWORD) {
+    return next(
+      customError(500, "Admin credentials not configured. Please contact system administrator."),
+    );
+  }
+
+  // Validate admin credentials
+  if (email !== ADMIN_EMAIL) {
+    return next(
+      customError(401, "Invalid admin Credentails"),
+    );
+  }
+
+  if (password !== ADMIN_PASSWORD) {
+    return next(
+      customError(401, "Invalid admin credentials"),
+    );
+  }
+
+  // Find or create admin user in database
+  let adminUser = await userModel.findOne({ email: ADMIN_EMAIL });
+
+  if (!adminUser) {
+    // Create admin user if doesn't exist
+    const hashedPassword = bcrypt.hashSync(ADMIN_PASSWORD, 10);
+    adminUser = await userModel.create({
+      name: "Admin",
+      email: ADMIN_EMAIL,
+      password: hashedPassword,
+      role: "admin",
+      isVerified: true,
+    });
+  } else {
+    // Update role to admin if user exists but isn't admin
+    if (adminUser.role !== "admin") {
+      adminUser.role = "admin";
+      await adminUser.save();
+    }
+  }
+
+  // Cache admin session
+  // await CacheService.cacheUserSession(adminUser._id.toString(), adminUser);
+
+  SendCookie(adminUser, 200, res);
 });
 
 export const Social_Oauth = AsyncWrapper(async (req, res, next) => {

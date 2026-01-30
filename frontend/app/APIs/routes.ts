@@ -286,3 +286,9 @@ export const GetAllReviewsApi = async() => {
 export const GetEnrolledCoursesApi = async() => {
   return axiosInstance.get<IGetEnrolledCoursesResponse>('/userAuth/enrolled-courses')
 }
+
+//Admin Login
+
+export const AdminLoginApi = async(payload:{email:string, password:string})=>{
+  return axiosInstance.post('/userAuth/admin-login',payload)
+}
