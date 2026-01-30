@@ -9,11 +9,11 @@ import { sendMail } from "../Utils/sendActivationEmail.js";
 import { fileURLToPath } from "url";
 import { SendCookie } from "../Utils/jwt.js";
 import { CookieParseOptions } from "cookie-parser";
-import { redisClient } from "../Redis/init.redis.js";
 import cloudinary from "cloudinary";
 import crypto from "crypto";
 import { GetProfileData } from "../../frontend/app/APIs/routes.js";
 import { CourseModel } from "../Model/course.model.js";
+import { deleteCache, setCache, getCache } from "../Utils/redis.cache.js";
 
 const __filename = fileURLToPath(import.meta.url);
 export const __dirname = path.dirname(__filename);
@@ -263,7 +263,7 @@ export const Reset_Password = AsyncWrapper(async (req, res, next) => {
 export const Logout_User = AsyncWrapper(async (req, res, next) => {
   res.clearCookie("access_token");
   res.clearCookie("refresh_token");
-  redisClient.del(req.user?._id);
+  await deleteCache(`user:${req.user?._id}`);
   return res.status(200).json({
     success: true,
     message: "User logout successfully",
@@ -317,7 +317,7 @@ export const Update_Profile = AsyncWrapper(async (req, res, next) => {
     new: true,
     runValidators: true,
   });
-  // redisClient.set(`${UserId}`, JSON.stringify(updatedData));
+  await setCache(`user:${UserId}`, updatedData);
   return res.status(201).json({
     success: true,
     data: updatedData,
@@ -340,7 +340,7 @@ export const update_Password = AsyncWrapper(async (req, res, next) => {
     { password: hashedNewPassword },
     { new: true, runValidators: true },
   );
-  // redisClient.set(`${userId}`, JSON.stringify(passwordUpdatedUser));
+  await setCache(`user:${userId}`, passwordUpdatedUser);
   return res.status(201).json({
     success: true,
     message: "Password updated successfully",
@@ -365,7 +365,6 @@ export const Update_Avatar = AsyncWrapper(async (req, res, next) => {
       url: Url,
     };
     const updatedUser = { ...user, avatar: AvatarData };
-    // redisClient.set(`${user?._id}`, JSON.stringify(updatedUser));
     const updatedUserData: IUser | null = await userModel.findByIdAndUpdate(
       user?._id,
       updatedUser,
@@ -374,6 +373,9 @@ export const Update_Avatar = AsyncWrapper(async (req, res, next) => {
         runValidators: true,
       },
     );
+    if (updatedUserData) {
+      await setCache(`user:${user?._id}`, updatedUserData);
+    }
     return {
       userData: updatedUserData,
     };
@@ -419,11 +421,10 @@ export const Update_User_Role = AsyncWrapper(async (req, res, next) => {
     { role: userRole },
     { new: true, runValidators: true },
   );
-  console.log("user", updatedRoleUser);
   if (!updatedRoleUser) {
     return next(customError(400, "No user found against this email"));
   }
-  // redisClient.set(userId,JSON.stringify(updatedRoleUser))
+  await setCache(`user:${updatedRoleUser._id}`, updatedRoleUser);
   const users = await userModel.find({});
   return res.status(201).json({
     success: true,
@@ -435,7 +436,7 @@ export const Update_User_Role = AsyncWrapper(async (req, res, next) => {
 export const Delete_User = AsyncWrapper(async (req, res, next) => {
   const userId = req.params?.id;
   const userDeleted = await userModel.findByIdAndDelete(userId);
-  await redisClient.del(userId);
+  await deleteCache(`user:${userId}`);
   if (!userDeleted) {
     return next(customError(400, "Failed to delete requested User"));
   }
