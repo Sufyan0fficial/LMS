@@ -1,4 +1,4 @@
-import express from 'express'
+import express, { NextFunction, Request, Response } from 'express'
 export const app = express()
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
@@ -10,6 +10,8 @@ import NotificationRouter from './Routes/notification.route.js'
 import AnalyticsRouter from './Routes/analytics.route.js'
 import LayoutRouter from './Routes/layout.route.js'
 import PaymentRouter from './Routes/payment.route.js'
+import { customError } from './Utils/customError.js'
+
 
 
 app.use(cors({
@@ -30,5 +32,12 @@ app.use('/api/v1/notification',NotificationRouter)
 app.use('/api/v1/analytics',AnalyticsRouter)
 app.use('/api/v1/layout',LayoutRouter)
 app.use('/api/v1/payment',PaymentRouter)
+
+app.use((req:Request,res:Response,next:NextFunction)=>{
+    if(req.path.startsWith('/api/v1')){
+        return next(customError(404,'Requested api route does not exist'))
+    }
+    return next(customError(400,'Failed to process your request'))
+})
 
 app.use(ErrorHandler)
