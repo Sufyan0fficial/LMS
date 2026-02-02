@@ -10,6 +10,7 @@ import { Button, Form, FormProps, Input, message } from "antd";
 import { useForm } from "antd/es/form/Form";
 import { UpdateAvatar, UpdateProfile } from "@/app/APIs/routes";
 import { dispatchUserData } from "@/app/Redux/UserSlice";
+import axios from "axios";
 
 interface IUserData {
   name: string;
@@ -70,15 +71,28 @@ function Account() {
         reader.onloadend = async()=>{
           const base64ImageUrl = reader.result
           console.log('base64imageurl',base64ImageUrl)
-          const res = await UpdateAvatar({ avatar: base64ImageUrl });
-          if (res.data.success) {
+          try {
+            
+            const res = await UpdateAvatar({ avatar: base64ImageUrl });
+            if (res.data.success) {
+                messageApi.open({
+                  key: "upload",
+                  content: "Uploaded successfully",
+                  type: "success",
+                });
+              dispatch(dispatchUserData(res.data.data))
+            }
+          } catch (error) {
+            if(axios.isAxiosError(error)){
               messageApi.open({
-                key: "upload",
-                content: "Uploaded successfully",
-                type: "success",
-              });
-            dispatch(dispatchUserData(res.data.data))
+                 key:'upload',
+                 type:'error',
+                 content:`${error.response?.data?.message || 'Failed to upload image'}`
+              })
+            }
+            
           }
+          
           
         }
       }
@@ -86,7 +100,7 @@ function Account() {
       console.log('error is',error)
         messageApi.open({
           key: "upload",
-          content: "Failed to upload image",
+          content: `${error || 'Failed to upload image'}`,
           type: "error",
         });
         setpreview('/profileimage.png')

@@ -47,9 +47,8 @@ const PaymentVerification = () => {
         router.replace(`/success?status=failed&message=${error.response?.data?.message || "Payment verification failed"}`);
       }
     };
-
     verifyPayment();
-  }, [searchParams]);
+  }, []);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-body-light dark:bg-body-dark">
