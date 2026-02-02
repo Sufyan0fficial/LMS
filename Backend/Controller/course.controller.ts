@@ -644,7 +644,9 @@ export const Search_Courses = AsyncWrapper(async (req, res, next) => {
       .sort(sortObj)
       .skip(skip)
       .limit(limitNum)
-      .select("-courseData"); // Exclude course content for performance
+      .select(
+    "-courseData.data.link -courseData.data.suggestion -courseData.data.questions -courseData.data.url"
+  );; // Exclude course content for performance
 
     return res.status(200).json({
       success: true,

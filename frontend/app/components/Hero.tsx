@@ -14,6 +14,7 @@ function Hero() {
   const { hero } = useSelector((state: any) => state.LayoutReducer);
   const heroImage = hero?.image ? hero?.image : '/hero-main.png';
   const heroTitle = hero?.title ? hero?.title : 'Transform Your Future with Expert-Led Online Courses';
+  const herosubtitle = hero?.subtitle ? hero?.subtitle : 'Join thousands of learners advancing their careers with industry-relevant skills. Start your learning journey today with our comprehensive course library.';
   
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,8 +43,7 @@ function Hero() {
                 {heroTitle}
               </h1>
               <p className="text-body text-secondary-light dark:text-secondary-dark max-w-xl">
-                Join thousands of learners advancing their careers with industry-relevant skills. 
-                Start your learning journey today with our comprehensive course library.
+                {herosubtitle}
               </p>
             </div>
           </AnimatedWrapper>

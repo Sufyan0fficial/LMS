@@ -9,6 +9,7 @@ import { VscThreeBars } from "react-icons/vsc";
 
 const CourseCard = ({ course }: { course: ICourseData }) => {
   const { screenWidth } = useSelector((state: any) => state.UtilReducer);
+  console.log('course',course)
   const [imageError, setImageError] = useState(false);
   
   const fallbackImage = "/placeholder-course.jpg";

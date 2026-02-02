@@ -221,7 +221,6 @@ const CourseAccess = () => {
           setCurrentVideo(firstLesson.url);
           setCurrentLesson(firstLesson);
           setCurrentLessonIndex({ section: 0, lesson: 0 });
-          setCurrentLessonIndex({ section: 0, lesson: 0 });
         }
       }
     } catch (error: any) {

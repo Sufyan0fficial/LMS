@@ -310,7 +310,7 @@ const CoursesPage = () => {
           <>
             <Row gutter={[24, 24]}>
               {courses.map((course) => (
-                <Col xs={24} sm={12} lg={8} xl={6} key={course._id}>
+                <Col xs={24} sm={12} lg={8} xl={8} key={course._id}>
                   <Link href={`/course/${course._id}`}>
                     <CourseCard course={course} />
                   </Link>
