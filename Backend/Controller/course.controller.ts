@@ -277,7 +277,7 @@ export const Answer_Question = AsyncWrapper(async (req, res, next) => {
       userName: targetQuestionData?.user?.name,
       questionText: targetQuestionData?.question,
       answerText: answer,
-      questionUrl: "question url",
+      questionUrl: `${process.env.FRONTEND_URL}/course-access/${courseId}`,
       replier: req.user?.name,
       courseContent: TargetedQuestion[0]?.courseContent?.name,
     }

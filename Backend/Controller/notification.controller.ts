@@ -5,16 +5,7 @@ import { deleteCache, setCache, getCache } from "../Utils/redis.cache.js";
 import cron from "node-cron";
 
 export const Get_Notifications = AsyncWrapper(async (req, res, next) => {
-  const user = req.user;
-  const cached = await getCache('notifications:all');
-  if (cached) {
-    return res.status(200).json({
-      success: true,
-      data: cached,
-    });
-  }
   const notifications = await NotificationModel.find({}).sort({ createdAt: -1 });
-  await setCache('notifications:all', notifications);
   return res.status(200).json({
     success: true,
     data: notifications,
@@ -32,11 +23,9 @@ export const Update_Notification = AsyncWrapper(async (req, res, next) => {
   if (!updatedNotification?._id) {
     return next(customError(400, "Failed to updated Notification Status"));
   }
-  await deleteCache('notifications:all');
   const notifications = await NotificationModel.find({
-    userId: user?._id,
+    // userId: user?._id,
   }).sort({ createdAt: -1 });
-  await setCache('notifications:all', notifications);
   return res.status(201).json({
     success: true,
     data: notifications,
@@ -50,7 +39,6 @@ cron.schedule("0 0 * * *", async () => {
       status: "read",
       createdAt: { $lt: thirtyDaysAgo }, 
     });
-    await deleteCache('notifications:all');
   } catch (error) {
     console.log('error : ',error)
   }
@@ -60,17 +48,14 @@ cron.schedule("0 0 * * *", async () => {
 
 
 export const Delete_Notification = AsyncWrapper(async (req, res, next) => {
-  const user = req?.user;
   const notificationId = req.params?.id;
   
   const deletedNotification = await NotificationModel.findByIdAndDelete(notificationId);
   if (!deletedNotification) {
     return next(customError(400, "Failed to delete notification"));
   }
-  await deleteCache('notifications:all');
   
   const notifications = await NotificationModel.find({}).sort({ createdAt: -1 });
-  await setCache('notifications:all', notifications);
   
   return res.status(200).json({
     success: true,

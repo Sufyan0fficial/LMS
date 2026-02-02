@@ -79,7 +79,7 @@ export const Create_Order = AsyncWrapper(async (req, res, next) => {
       orderId: `ORD-${Order?._id.toString().slice(0, 7)}`,
       amount: CourseDetail?.price,
       purchaseDate: new Date(),
-      dashboardUrl: "https://google.com",
+      dashboardUrl: `${process.env.FRONTEND_URL}/course-access/${courseId}`,
       paymentMethod: "credit Card",
     }
   );
