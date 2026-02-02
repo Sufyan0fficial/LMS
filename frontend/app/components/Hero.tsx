@@ -74,7 +74,7 @@ function Hero() {
           {/* Social Proof */}
           <AnimatedWrapper from="left" delay={0.4}>
             <div className="flex flex-col sm:flex-row items-center gap-4">
-              <Avatar.Group size="large" maxCount={4}>
+              <Avatar.Group size="large" max={{count:4}}>
                 <Avatar style={{ backgroundColor: "#4f46e5" }}>S</Avatar>
                 <Avatar style={{ backgroundColor: "#f59e0b" }}>M</Avatar>
                 <Avatar style={{ backgroundColor: "#22c55e" }}>A</Avatar>
@@ -104,7 +104,7 @@ function Hero() {
                   Explore Courses
                 </Button>
               </Link>
-              <Link href="/faqs">
+              <Link href="/#faq">
                 <Button 
                   size="large"
                   className="border-input-border-light dark:border-input-border-dark text-primary-light dark:text-primary-dark hover:border-bprimary hover:text-bprimary font-medium px-8 py-3 h-auto"

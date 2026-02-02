@@ -43,6 +43,7 @@ import {
   CreateCourseApiFn,
   EditCourseApi,
   GetLayoutDataApi,
+  GetSingleCourseAdminApi,
   GetSingleCourseApi,
 } from "@/app/APIs/routes";
 import axios, { Axios } from "axios";
@@ -172,9 +173,11 @@ const CreateCourse = () => {
   useEffect(() => {
     const requestedCourse = async () => {
       try {
-        const res = await GetSingleCourseApi(courseToBeEdited);
+        const res = await GetSingleCourseAdminApi(courseToBeEdited);
         if (res.data.success) {
           const data = res.data.data;
+          console.log('📚 Fetched course data:', data);
+          
           // setCreateCoursePayload(data);
           setThumbnailUrl(data.thumbnail.url);
           const reader = new FileReader();
@@ -198,13 +201,30 @@ const CreateCourse = () => {
           setTags(courseInformation.tags);
           setCourseBenefits(data.benefits);
           setCoursePrereq(data.preRequisits);
-          setCourseData(data.courseData || []);
+          
+          // Ensure courseData has proper structure with all fields
+          const formattedCourseData = data.courseData?.map((section: any) => ({
+            sectionName: section.sectionName || "",
+            data: section.data?.map((content: any) => ({
+              name: content.name || "",
+              description: content.description || "",
+              url: content.url || "", // Video ID
+              videoLength: content.videoLength || 0,
+              link: content.link?.map((linkItem: any) => ({
+                title: linkItem.title || "",
+                url: linkItem.url || "",
+              })) || [{ title: "", url: "" }],
+            })) || [],
+          })) || [];
+          
+          console.log('📝 Formatted course data:', formattedCourseData);
+          setCourseData(formattedCourseData);
         }
       } catch (error) {
         if (axios.isAxiosError(error)) {
           return messageApi.error(
             error.response?.data.message ||
-              "Something went wrong, Fialed to fetch course Data",
+              "Something went wrong, Failed to fetch course Data",
           );
         }
       }
@@ -537,9 +557,9 @@ const CreateCourse = () => {
         if (!content.url) {
           return messageApi.warning("Course URL is requried");
         }
-        if (content.link?.length === 0) {
-          return messageApi.warning("Minimum one ourse link is required");
-        }
+        // if (content.link?.length === 0) {
+        //   return messageApi.warning("Minimum one course link is required");
+        // }
         for (const link of content.link) {
           if (!link.title) {
             return messageApi.warning("Link title is required");

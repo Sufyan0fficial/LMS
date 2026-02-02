@@ -1,6 +1,7 @@
 "use client";
 
-import { CreateLayoutApi, UpdateLayoutApi } from "@/app/APIs/routes";
+import { CreateLayoutApi, GetLayoutDataApi, UpdateLayoutApi } from "@/app/APIs/routes";
+import InitialPageloader from "@/app/components/initialPageloader";
 import { dispatchFaqs } from "@/app/Redux/Layout";
 import { Button, Input, message } from "antd";
 import axios from "axios";
@@ -20,13 +21,29 @@ const FAQ = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const [faqsAlreadyCreated, setFaqsAlreadyCreated] = useState(false);
   const dispatch = useDispatch();
+  const [createloading, setcreateloading] = useState(false)
 
   useEffect(() => {
-    const firstFaqTest = reduxStoredFaqs?.[0];
-    if (firstFaqTest.question && firstFaqTest.answer) {
-      setFaqsAlreadyCreated(true);
+
+    const fetchFaqs = async()=>{
+      try {
+        setloading(true)
+        const res = await GetLayoutDataApi({type:'faq'})
+        if(res.data.success){
+          setFaqsAlreadyCreated(true)
+          setFaqPayload(res.data.data.faq)
+        }
+      } catch (error) {
+        if(axios.isAxiosError(error)){
+          return messageApi.error('Failed to fetch categories, Please try again')
+        }
+      }
+      finally{
+        setloading(false)
+      }
     }
-  }, [reduxStoredFaqs]);
+    fetchFaqs()
+  }, []);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -46,7 +63,7 @@ const FAQ = () => {
     
 
     try {
-      setloading(true);
+      setcreateloading(true);
       let res;
       faqsAlreadyCreated
         ? (res = await UpdateLayoutApi({
@@ -71,9 +88,15 @@ const FAQ = () => {
         );
       }
     } finally {
-      setloading(false);
+      setcreateloading(false);
     }
   };
+
+   if(loading){
+      return <InitialPageloader />
+    }
+
+
   return (
     <div>
       {contextHolder}
@@ -136,7 +159,7 @@ const FAQ = () => {
           block
           icon
           iconPlacement="end"
-          loading={loading}
+          loading={createloading}
           className="mt-6"
           onClick={handleCreateFaq}
         >

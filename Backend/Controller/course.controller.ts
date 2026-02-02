@@ -106,6 +106,29 @@ export const Get_Single_Course = AsyncWrapper(
     });
   }
 );
+export const Get_Single_Course_Admin = AsyncWrapper(
+  async (req, res, next) => {
+    const id = req.params?.id;
+    if (!id) {
+      return next(customError(400, "Failed to fetch requested Course"));
+    }
+    
+    // const cached = await getCache(`course:${id}`);
+    // if (cached) {
+    //   return res.status(200).json({
+    //     data: cached,
+    //     success: true,
+    //   });
+    // }
+    
+    const Course = await CourseModel.findById(id)
+    // await setCache(`course:${id}`, Course);
+    return res.status(200).json({
+      data: Course,
+      success: true,
+    });
+  }
+);
 
 export const Get_Courses = AsyncWrapper(async (req, res, next) => {
   const cached = await getCache('courses:all');

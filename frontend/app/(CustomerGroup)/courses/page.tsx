@@ -247,10 +247,11 @@ const CoursesPage = () => {
         <div className="mb-8">
           <div className="flex flex-wrap justify-center gap-4">
             <div className={`px-4  rounded-4xl  border max-w-max py-1 text-center text-sm md:text-base ${selectedCategory === '' ? 'text-red-600' : ''} cursor-pointer`} onClick={() => handleCategoryFilter('')}>All</div>
-            {categories.map((category) => (
+            {categories.map((category,i) => (
               <div
                 className={`px-4 py-1 text-center rounded-4xl  border max-w-max cursor-pointer text-sm md:text-base ${selectedCategory ===category.title ? 'text-red-600' : ''}`}
                 onClick={() => handleCategoryFilter(category.title)}
+                key={i}
               >
                 {category.title}
               </div>

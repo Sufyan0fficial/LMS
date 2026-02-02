@@ -1,6 +1,6 @@
 import express from 'express'
 import { Authorize_Role, Verify_User } from '../MiddleWare/auth.js'
-import { Access_Course_Content, Add_Review, Answer_Question, Ask_Question, Delete_Course, Edit_Course, Get_All_Courses, Get_Courses, Get_Single_Course, Reply_Review, Upload_Course, VdoCipher_Video_Data, Get_Reviews, Edit_Review, Get_User_Review, Search_Courses, Get_All_Reviews } from '../Controller/course.controller.js'
+import { Access_Course_Content, Add_Review, Answer_Question, Ask_Question, Delete_Course, Edit_Course, Get_All_Courses, Get_Courses, Get_Single_Course, Reply_Review, Upload_Course, VdoCipher_Video_Data, Get_Reviews, Edit_Review, Get_User_Review, Search_Courses, Get_All_Reviews, Get_Single_Course_Admin } from '../Controller/course.controller.js'
 const router = express.Router()
 
 // Admin-only routes
@@ -10,6 +10,7 @@ router.route('/delete-course/:id').delete(Verify_User, Authorize_Role('admin'), 
 router.route('/get-all-courses').get(Verify_User, Authorize_Role('admin'), Get_All_Courses)
 router.route('/answer-question').patch(Verify_User, Authorize_Role('admin'), Answer_Question)
 router.route('/reply-review').patch(Verify_User, Authorize_Role('admin'), Reply_Review)
+router.route('/get-course-admin/:id').get(Verify_User, Authorize_Role('admin'), Get_Single_Course_Admin)
 
 // Public routes
 router.route('/get-course/:id').get(Get_Single_Course)

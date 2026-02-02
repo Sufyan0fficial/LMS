@@ -163,6 +163,9 @@ export const DeleteCourseApi = async (id:string) => {
 export const GetSingleCourseApi = async (id:string | null) => {
   return axiosInstance.get<IGetSingleCourseResponse>(`/courses/get-course/${id}`)
 };
+export const GetSingleCourseAdminApi = async (id:string | null) => {
+  return axiosInstance.get<IGetSingleCourseResponse>(`/courses/get-course-admin/${id}`)
+};
 export const EditCourseApi = async (payload:ICreateCoursePayload,id:string | null) => {
   return axiosInstance.patch<IEditCourseResponse>(`/courses/edit/${id}`,payload)
 };
