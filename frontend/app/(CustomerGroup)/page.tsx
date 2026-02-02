@@ -87,6 +87,9 @@ const Page: FC<IProps> = () => {
     );
   }
 
+
+
+
   return (
     <div className="max-w-7xl w-full px-6 md:px-10 mx-auto flex flex-col gap-y-10 lg:gap-y-20">
       <Hero />

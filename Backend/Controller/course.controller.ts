@@ -97,7 +97,7 @@ export const Get_Single_Course = AsyncWrapper(
     }
     
     const Course = await CourseModel.findById(id).select(
-      "-courseData.data.suggestion -courseData.data.questions "
+      "-courseData.data.suggestion -courseData.data.questions -courseData.data.link -courseData.data.url"
     );
     await setCache(`course:${id}`, Course);
     return res.status(200).json({
@@ -130,9 +130,7 @@ export const Access_Course_Content = AsyncWrapper(async (req, res, next) => {
   const courseId = req.params?.id;
   const userEnrolledCourses: string[] = req.user?.courses;
   console.log("courses ", userEnrolledCourses);
-  const isRequestedCourseEnrolled = userEnrolledCourses.find(
-    (course: any) => course === courseId
-  );
+  const isRequestedCourseEnrolled = userEnrolledCourses.includes(courseId)
 
   if (!isRequestedCourseEnrolled) {
     return next(

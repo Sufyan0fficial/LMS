@@ -27,7 +27,7 @@ const AdminLogin: React.FC = () => {
       setLoading(true);
       const res = await AdminLoginApi(values)
       if (res.data.success) {
-        // dispatch(dispatchUserData(res.data?.data));
+        dispatch(dispatchUserData(res.data?.data));
         messageApi.success("Admin authenticated successfully!");
         setTimeout(() => {
           router.push("/admin/dashboard");

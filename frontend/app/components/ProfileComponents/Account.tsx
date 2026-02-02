@@ -72,13 +72,11 @@ function Account() {
           console.log('base64imageurl',base64ImageUrl)
           const res = await UpdateAvatar({ avatar: base64ImageUrl });
           if (res.data.success) {
-            setTimeout(() => {
               messageApi.open({
                 key: "upload",
                 content: "Uploaded successfully",
                 type: "success",
               });
-            }, 2000);
             dispatch(dispatchUserData(res.data.data))
           }
           

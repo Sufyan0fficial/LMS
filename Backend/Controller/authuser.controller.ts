@@ -492,10 +492,10 @@ export const Update_User_Role = AsyncWrapper(async (req, res, next) => {
 export const Delete_User = AsyncWrapper(async (req, res, next) => {
   const userId = req.params?.id;
   const userDeleted = await userModel.findByIdAndDelete(userId);
-  await deleteCache(`user:${userId}`);
   if (!userDeleted) {
     return next(customError(400, "Failed to delete requested User"));
   }
+  await deleteCache(`user:${userId}`);
   const users = await userModel.find({});
   return res.status(200).json({
     success: true,

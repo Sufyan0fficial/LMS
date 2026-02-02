@@ -52,10 +52,12 @@ const VerifyAccount: React.FC = () => {
           authToken,
           verificationCode: otp,
         },
-        verifyEmailQuery ? true : false
+        verifyEmailQuery ? true : false,
       );
       if (res.data.success) {
-        messageApi.success("Account Activated Successfully");
+        verifyEmailQuery
+          ? messageApi.success("Email Verified Successfully")
+          : messageApi.success("Account Activated Successfully");
         setTimeout(() => {
           verifyEmailQuery
             ? router.replace("/reset-password")
@@ -67,7 +69,7 @@ const VerifyAccount: React.FC = () => {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         messageApi.error(
-          `${error.response?.data?.message}` || "Failed to activate account"
+          `${error.response?.data?.message}` || "Failed to activate account",
         );
       }
     } finally {
@@ -83,7 +85,7 @@ const VerifyAccount: React.FC = () => {
         content: "Processing...",
       });
       const refreshToken = JSON.parse(
-        localStorage.getItem("refreshToken") as string
+        localStorage.getItem("refreshToken") as string,
       );
       const res = await ResendActivationCode({ refreshToken });
       if (res.data.success) {
