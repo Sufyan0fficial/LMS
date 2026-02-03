@@ -1,5 +1,6 @@
 import { AsyncWrapper } from "../MiddleWare/AsyncWrapper.js";
-import { IUser, userModel } from "../Model/user.model.js";
+import type { IUser } from "../Model/user.model.js";
+import { userModel } from "../Model/user.model.js";
 import { customError } from "../Utils/customError.js";
 import bcrypt from "bcryptjs";
 import jwt, { Secret } from "jsonwebtoken";
@@ -8,10 +9,8 @@ import path from "path";
 import { sendMail } from "../Utils/sendActivationEmail.js";
 import { fileURLToPath } from "url";
 import { SendCookie } from "../Utils/jwt.js";
-import { CookieParseOptions } from "cookie-parser";
 import cloudinary from "cloudinary";
 import crypto from "crypto";
-import { GetProfileData } from "../../frontend/app/APIs/routes.js";
 import { CourseModel } from "../Model/course.model.js";
 import { deleteCache, setCache, getCache } from "../Utils/redis.cache.js";
 

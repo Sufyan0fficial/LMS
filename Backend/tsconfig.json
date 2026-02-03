@@ -40,10 +40,11 @@
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true,
-    "exclude": [
+    
+  },
+  "exclude": [
     "node_modules", 
     "../frontend",                       // <--- CRITICAL: Ignore the frontend!
     "dist"                               // Don't try to compile the output folder
   ]
-  }
 }

@@ -1,8 +1,8 @@
 import { customError } from "../Utils/customError.js";
 import { AsyncWrapper } from "./AsyncWrapper.js";
 import jwt from "jsonwebtoken";
-import { NextFunction } from "express";
-import { Request, Response } from "express";
+import type { NextFunction } from "express";
+import type { Request, Response } from "express";
 import { userModel } from "../Model/user.model.js";
 import { getCache, setCache } from "../Utils/redis.cache.js";
 

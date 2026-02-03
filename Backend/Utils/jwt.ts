@@ -1,5 +1,5 @@
 import { CookieOptions, Response } from "express";
-import { IUser } from "../Model/user.model.js";
+import type { IUser } from "../Model/user.model.js";
 import jwt, { Secret } from 'jsonwebtoken'
 import { setCache } from "../Utils/redis.cache.js";
 import dotenv from 'dotenv'

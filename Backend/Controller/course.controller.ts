@@ -1,12 +1,10 @@
 import { AsyncWrapper } from "../MiddleWare/AsyncWrapper.js";
 import {
   CourseModel,
-  ICourseDataSchema,
-  ICourseSchema,
 } from "../Model/course.model.js";
 import cloudinary from "cloudinary";
 import { customError } from "../Utils/customError.js";
-import { getCache, setCache, deleteCache, deleteCachePattern } from "../Utils/redis.cache.js";
+import { getCache, setCache, deleteCache } from "../Utils/redis.cache.js";
 import mongoose from "mongoose";
 import { __dirname } from "./authuser.controller.js";
 import path from "path";
