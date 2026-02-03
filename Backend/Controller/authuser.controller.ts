@@ -11,7 +11,6 @@ import { SendCookie } from "../Utils/jwt.js";
 import { CookieParseOptions } from "cookie-parser";
 import cloudinary from "cloudinary";
 import crypto from "crypto";
-import { GetProfileData } from "../../frontend/app/APIs/routes.js";
 import { CourseModel } from "../Model/course.model.js";
 import { deleteCache, setCache, getCache } from "../Utils/redis.cache.js";
 
