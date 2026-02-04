@@ -434,10 +434,16 @@ const CourseAccess = () => {
       setReviewLoading(false);
     }
   };
+  
+  if(!user?._id || !user?.courses?.includes(courseId)){
+    return router.replace('/')
+  }
 
   if (loading) {
     return <InitialPageloader />;
   }
+
+
 
   const collapseItems = courseContent.map((section, sectionIndex) => ({
     key: sectionIndex.toString(),

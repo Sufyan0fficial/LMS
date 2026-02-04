@@ -91,6 +91,11 @@ const Profile = (props: Props) => {
       messageApi.error("Failed to Logout User");
     }
   };
+
+  if(!user?._id){
+    return router.replace('/')
+  }
+  
   return (
     <div className="w-full">
       {contextHolder}
