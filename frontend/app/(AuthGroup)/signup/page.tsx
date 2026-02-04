@@ -11,6 +11,8 @@ import { useRouter } from "next/navigation";
 import { FcGoogle } from "react-icons/fc";
 import { AiFillGithub } from "react-icons/ai";
 import { signIn, useSession } from "next-auth/react";
+import { dispatchUserData } from "@/app/Redux/UserSlice";
+import { useDispatch } from "react-redux";
 
 type FieldType = {
   name: string;
@@ -24,6 +26,7 @@ const Signup: React.FC = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const router = useRouter();
   const { data: session } = useSession();
+  const dispatch = useDispatch()
 
   console.log("data is", session);
   useEffect(() => {
@@ -38,6 +41,7 @@ const Signup: React.FC = () => {
           session?.user as { name: string; email: string; image: string }
         );
         if (res.data.success) {
+          dispatch(dispatchUserData(res.data.data))
           setTimeout(() => {
             messageApi.open({
               key: "oauth",

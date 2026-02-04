@@ -13,13 +13,13 @@ import LayoutRouter from './Routes/layout.route.js'
 import PaymentRouter from './Routes/payment.route.js'
 import { customError } from './Utils/customError.js'
 import dotenv from 'dotenv'
-dotenv.config()
+    dotenv.config()
 
 
-app.use(cors({
-    origin: [`${process.env.FRONTEND_URL}`,'http://192.168.100.12:3001'],
-    credentials:true    
-}))
+    app.use(cors({
+        origin: [`${process.env.FRONTEND_URL}`,'https://elearning-cwmb.onrender.com'],
+        credentials:true    
+    }))
 
 app.use(cookieParser())
 
