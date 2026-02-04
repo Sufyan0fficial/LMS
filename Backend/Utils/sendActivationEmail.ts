@@ -6,12 +6,16 @@ export const sendMail = async (options:any):Promise<void>=>{
     const transmitter = nodemailer.createTransport({
         host:process.env.SMTP_HOST,
         port:Number(process.env.SMTP_PORT),
-        // secure:false,
+        secure:true,
         auth:{
             user:process.env.SMTP_MAIL,
             pass:process.env.SMTP_PASSWORD
-        }
-    } as {host:string, port:number, secure:boolean , auth:{user:string, pass:string}}) 
+        },
+        tls: {
+    rejectUnauthorized: false
+  },
+  connectionTimeout: 20000, 
+    } as {host:string, port:number, secure:boolean , auth:{user:string, pass:string},tls:{rejectUnauthorized:boolean},connectionTimeout:number}) 
 
     const mailOptions = {
         from:process.env.SMTP_MAIL || '',
