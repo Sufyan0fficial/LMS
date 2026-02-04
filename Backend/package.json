@@ -7,8 +7,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "tsx --watch server.ts",
-    "build":"npm install && tsc",
-    "start":"node dist/server.js"
+    "build": "npm install && tsc && copyfiles Templates/**/* dist/",
+    "start": "node dist/server.js"
   },
   "author": "Muhammad Sufyan",
   "license": "ISC",
@@ -43,6 +43,7 @@
     "typescript": "^5.9.3"
   },
   "devDependencies": {
+    "copyfiles": "^2.4.1",
     "tsx": "^4.21.0"
   }
 }
