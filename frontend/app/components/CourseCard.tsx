@@ -60,7 +60,7 @@ const CourseCard = ({ course }: { course: ICourseData }) => {
             className="text-sm"
           />
           <span className="text-meta text-muted-light dark:text-muted-dark">
-            ({course.ratings || 0})
+            ({Math.round(course.ratings || 0)})
           </span>
         </div>
 
