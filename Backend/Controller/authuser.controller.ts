@@ -212,7 +212,7 @@ export const Admin_Login = AsyncWrapper(async (req, res, next) => {
     // Update role to admin if user exists but isn't admin
     if (adminUser.role !== "admin") {
       adminUser.role = "admin";
-      await adminUser.save();
+      SendCookie(adminUser,200,res)
     }
   }
 

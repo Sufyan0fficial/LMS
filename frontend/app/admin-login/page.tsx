@@ -83,7 +83,7 @@ const AdminLogin: React.FC = () => {
               { type: "email", message: "Invalid email format" },
             ]}
           >
-            <Input placeholder="admin@elearning.com" />
+            <Input placeholder="admin email" />
           </Form.Item>
 
           <Form.Item<FieldType>
