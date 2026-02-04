@@ -41,7 +41,10 @@ export const Edit_Course = AsyncWrapper(async (req, res, next) => {
     delete RequestedChanges.thumbnail;
   }
   console.log("hi");
-  const isCourseAvailable = await CourseModel.findOne({ _id: id });
+  if (!id) {
+    return next(customError(400, "Course ID is required"));
+  }
+  const isCourseAvailable = await CourseModel.findById(id);
   console.log("course is", isCourseAvailable);
   if (!isCourseAvailable) {
     return next(customError(400, "Course does not exist"));
@@ -148,7 +151,7 @@ export const Get_Courses = AsyncWrapper(async (req, res, next) => {
 })
 
 export const Access_Course_Content = AsyncWrapper(async (req, res, next) => {
-  const courseId = req.params?.id;
+  const courseId = req.params?.id as string;
   const userEnrolledCourses: string[] = req.user?.courses;
   console.log("courses ", userEnrolledCourses);
   const isRequestedCourseEnrolled = userEnrolledCourses.includes(courseId)
@@ -351,10 +354,8 @@ export const Add_Review = AsyncWrapper(async (req, res, next) => {
     createdAt: new Date(),
   };
 
-  const addReview = await CourseModel.findOneAndUpdate(
-    {
-      _id: courseId,
-    },
+  const addReview = await CourseModel.findByIdAndUpdate(
+    courseId,
     {
       $push: {
         reviews: reviewData,
@@ -373,7 +374,7 @@ export const Add_Review = AsyncWrapper(async (req, res, next) => {
   userId: user?._id,
   message: `${user?.name} give review to the course ${existingCourse?.name}`,
 });
-  const allReveiws = addReview?.reviews;
+  const allReveiws = addReview.reviews;
   console.log("all reviews are", allReveiws);
   let totalSum: number = 0;
 
@@ -388,10 +389,8 @@ export const Add_Review = AsyncWrapper(async (req, res, next) => {
 
   const avgRating = totalSum / allReveiws?.length;
   console.log("avg Rating", avgRating);
-  const Course = await CourseModel.findOneAndUpdate(
-    {
-      _id: courseId,
-    },
+  const Course = await CourseModel.findByIdAndUpdate(
+    courseId,
     {
       ratings: avgRating,
     },
@@ -563,9 +562,11 @@ export const Edit_Review = AsyncWrapper(async (req, res, next) => {
   }
 
   // Update the review
-  course.reviews[reviewIndex].comment = comment;
-  course.reviews[reviewIndex].rating = rating;
-  course.reviews[reviewIndex].createdAt  = new Date() as any
+  if (course.reviews[reviewIndex]) {
+    course.reviews[reviewIndex].comment = comment;
+    course.reviews[reviewIndex].rating = rating;
+    course.reviews[reviewIndex].createdAt = new Date() as any;
+  }
 
   await course.save(); 
 
