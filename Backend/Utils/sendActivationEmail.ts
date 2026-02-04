@@ -1,29 +1,22 @@
-import nodemailer, { Transport, Transporter, TransportOptions } from 'nodemailer'
-import dotenv from 'dotenv'
-dotenv.config()
+import { Resend } from 'resend';
 
-export const sendMail = async (options:any):Promise<void>=>{
-    const transmitter = nodemailer.createTransport({
-        host:process.env.SMTP_HOST,
-        port:Number(process.env.SMTP_PORT),
-        secure:true,
-        auth:{
-            user:process.env.SMTP_MAIL,
-            pass:process.env.SMTP_PASSWORD
-        },
-        tls: {
-    rejectUnauthorized: false
-  },
-  connectionTimeout: 20000, 
-    } as {host:string, port:number, secure:boolean , auth:{user:string, pass:string},tls:{rejectUnauthorized:boolean},connectionTimeout:number}) 
+const resend = new Resend(process.env.RESEND_API_KEY);
 
-    const mailOptions = {
-        from:process.env.SMTP_MAIL || '',
-        to:options.to || '',
-        subject:options.subject || '',
-        html:options.html || ''
-    } as any
+export const sendMail = async ({to, subject, html}:{to:string, subject:string, html:string}) => {
+  try {
+    const { data, error } = await resend.emails.send({
+      from: 'LMS Support <onboarding@resend.dev>', // Use this for testing
+      to: [to],
+      subject: subject,
+      html: html,
+    });
 
-    await transmitter.sendMail(mailOptions)
-}
+    if (error) {
+      return console.error({ error });
+    }
 
+    console.log({ data });
+  } catch (err) {
+    console.error("API Call Failed:", err);
+  }
+};
