@@ -12,7 +12,8 @@ import AnalyticsRouter from './Routes/analytics.route.js'
 import LayoutRouter from './Routes/layout.route.js'
 import PaymentRouter from './Routes/payment.route.js'
 import { customError } from './Utils/customError.js'
-
+import dotenv from 'dotenv'
+dotenv.config()
 
 
 app.use(cors({
