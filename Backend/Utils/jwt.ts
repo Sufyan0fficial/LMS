@@ -20,11 +20,13 @@ export const SendCookie = async (user:IUser,statusCode:number,res:Response, flag
         maxAge : accessTokenExpires,
         httpOnly : true,
         secure:process.env.NODE_ENV === 'production',
+        sameSite:'none'
     }
     const refreshTokenOptions:CookieOptions = {
         maxAge : refreshTokenExpires,
         httpOnly : true,
         secure:process.env.NODE_ENV === 'production',
+        sameSite:'none'
     }
 
     res.cookie('access_token',access_Token,accessTokenOptions)
