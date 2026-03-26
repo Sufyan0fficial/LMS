@@ -22,11 +22,11 @@ jobs:
             
             # Step 1: Go to home directory and get the code
             cd ~
-            if [ ! -d "<LMS>" ]; then
-              git clone <https://github.com/Sufyan0fficial/LMS.git> <LMS>
+            if [ ! -d "LMS" ]; then
+              git clone https://github.com/Sufyan0fficial/LMS.git LMS
             fi
             
-            cd <LMS>
+            cd LMS
             git pull origin Dev
             
             # Step 2: Setup the Node.js Backend (Room 5000)
