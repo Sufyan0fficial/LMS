@@ -33,7 +33,6 @@ jobs:
             echo "⚙️ Setting up Backend..."
             cd Backend
             npm install
-            npm run dev
             
             # Change 'index.js' if your backend starting file is named server.js or app.js
             pm2 restart backend-api || pm2 start server.ts --name "backend-api"
