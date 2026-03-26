@@ -1,0 +1,54 @@
+name: Deploy MERN Stack to Azure
+
+# Trigger the robot whenever you push new code to the 'main' branch
+on:
+  push:
+    branches:
+      - Dev
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest 
+
+    steps:
+      - name: Deploying to Azure VM
+        uses: appleboy/ssh-action@master 
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            echo "🚀 Robot successfully connected to Azure Server!"
+            
+            # Step 1: Go to home directory and get the code
+            cd ~
+            if [ ! -d "<LMS>" ]; then
+              git clone <https://github.com/Sufyan0fficial/LMS.git> <LMS>
+            fi
+            
+            cd <LMS>
+            git pull origin Dev
+            
+            # Step 2: Setup the Node.js Backend (Room 5000)
+            echo "⚙️ Setting up Backend..."
+            cd Backend
+            npm install
+            npm run dev
+            
+            # Change 'index.js' if your backend starting file is named server.js or app.js
+            pm2 restart backend-api || pm2 start server.ts --name "backend-api"
+            
+            cd .. # Go back to the main repo folder
+            
+            # Step 3: Setup the Next.js Frontend (Room 3000)
+            echo "🎨 Setting up Frontend..."
+            cd frontend
+            npm install
+            npm run dev
+            
+            pm2 restart frontend-ui || pm2 start npm --name "frontend-ui" -- start
+            
+            # Step 4: Save the PM2 list so apps turn back on if the server reboots
+            pm2 save
+            
+            echo "✅ Deployment Complete!"
