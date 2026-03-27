@@ -247,10 +247,11 @@ const CoursesPage = () => {
         <div className="mb-8">
           <div className="flex flex-wrap justify-center gap-4">
             <div className={`px-4  rounded-4xl  border max-w-max py-1 text-center text-sm md:text-base ${selectedCategory === '' ? 'text-red-600' : ''} cursor-pointer`} onClick={() => handleCategoryFilter('')}>All</div>
-            {categories.map((category) => (
+            {categories.map((category,i) => (
               <div
                 className={`px-4 py-1 text-center rounded-4xl  border max-w-max cursor-pointer text-sm md:text-base ${selectedCategory ===category.title ? 'text-red-600' : ''}`}
                 onClick={() => handleCategoryFilter(category.title)}
+                key={i}
               >
                 {category.title}
               </div>
@@ -310,7 +311,7 @@ const CoursesPage = () => {
           <>
             <Row gutter={[24, 24]}>
               {courses.map((course) => (
-                <Col xs={24} sm={12} lg={8} xl={6} key={course._id}>
+                <Col xs={24} sm={12} lg={8} xl={8} key={course._id}>
                   <Link href={`/course/${course._id}`}>
                     <CourseCard course={course} />
                   </Link>

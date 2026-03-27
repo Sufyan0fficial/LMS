@@ -163,6 +163,9 @@ export const DeleteCourseApi = async (id:string) => {
 export const GetSingleCourseApi = async (id:string | null) => {
   return axiosInstance.get<IGetSingleCourseResponse>(`/courses/get-course/${id}`)
 };
+export const GetSingleCourseAdminApi = async (id:string | null) => {
+  return axiosInstance.get<IGetSingleCourseResponse>(`/courses/get-course-admin/${id}`)
+};
 export const EditCourseApi = async (payload:ICreateCoursePayload,id:string | null) => {
   return axiosInstance.patch<IEditCourseResponse>(`/courses/edit/${id}`,payload)
 };
@@ -285,4 +288,10 @@ export const GetAllReviewsApi = async() => {
 // Get Enrolled Courses API
 export const GetEnrolledCoursesApi = async() => {
   return axiosInstance.get<IGetEnrolledCoursesResponse>('/userAuth/enrolled-courses')
+}
+
+//Admin Login
+
+export const AdminLoginApi = async(payload:{email:string, password:string})=>{
+  return axiosInstance.post('/userAuth/admin-login',payload)
 }

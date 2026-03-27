@@ -1,5 +1,6 @@
 import { AsyncWrapper } from "../MiddleWare/AsyncWrapper.js";
-import { IUser, userModel } from "../Model/user.model.js";
+import type { IUser } from "../Model/user.model.js";
+import { userModel } from "../Model/user.model.js";
 import { customError } from "../Utils/customError.js";
 import bcrypt from "bcryptjs";
 import jwt, { Secret } from "jsonwebtoken";
@@ -8,12 +9,10 @@ import path from "path";
 import { sendMail } from "../Utils/sendActivationEmail.js";
 import { fileURLToPath } from "url";
 import { SendCookie } from "../Utils/jwt.js";
-import { CookieParseOptions } from "cookie-parser";
-import { redisClient } from "../Redis/init.redis.js";
 import cloudinary from "cloudinary";
 import crypto from "crypto";
-import { GetProfileData } from "../../frontend/app/APIs/routes.js";
 import { CourseModel } from "../Model/course.model.js";
+import { deleteCache, setCache, getCache } from "../Utils/redis.cache.js";
 
 const __filename = fileURLToPath(import.meta.url);
 export const __dirname = path.dirname(__filename);
@@ -164,7 +163,63 @@ export const Login_User = AsyncWrapper(async (req, res, next) => {
     );
   }
 
+  // Cache user session
+  // await CacheService.cacheUserSession(RegisteredUser._id.toString(), RegisteredUser);
+
   SendCookie(RegisteredUser, 200, res);
+});
+
+export const Admin_Login = AsyncWrapper(async (req, res, next) => {
+  const { email, password } = req.body;
+
+  // Get admin credentials from environment variables
+  const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
+  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+
+  if (!ADMIN_EMAIL || !ADMIN_PASSWORD) {
+    return next(
+      customError(500, "Admin credentials not configured. Please contact system administrator."),
+    );
+  }
+
+  // Validate admin credentials
+  if (email !== ADMIN_EMAIL) {
+    return next(
+      customError(401, "Invalid admin Credentails"),
+    );
+  }
+
+  if (password !== ADMIN_PASSWORD) {
+    return next(
+      customError(401, "Invalid admin credentials"),
+    );
+  }
+
+  // Find or create admin user in database
+  let adminUser = await userModel.findOne({ email: ADMIN_EMAIL });
+
+  if (!adminUser) {
+    // Create admin user if doesn't exist
+    const hashedPassword = bcrypt.hashSync(ADMIN_PASSWORD, 10);
+    adminUser = await userModel.create({
+      name: "Admin",
+      email: ADMIN_EMAIL,
+      password: hashedPassword,
+      role: "admin",
+      isVerified: true,
+    });
+  } else {
+    // Update role to admin if user exists but isn't admin
+    if (adminUser.role !== "admin") {
+      adminUser.role = "admin";
+      SendCookie(adminUser,200,res)
+    }
+  }
+
+  // Cache admin session
+  // await CacheService.cacheUserSession(adminUser._id.toString(), adminUser);
+
+  SendCookie(adminUser, 200, res);
 });
 
 export const Social_Oauth = AsyncWrapper(async (req, res, next) => {
@@ -263,7 +318,7 @@ export const Reset_Password = AsyncWrapper(async (req, res, next) => {
 export const Logout_User = AsyncWrapper(async (req, res, next) => {
   res.clearCookie("access_token");
   res.clearCookie("refresh_token");
-  redisClient.del(req.user?._id);
+  await deleteCache(`user:${req.user?._id}`);
   return res.status(200).json({
     success: true,
     message: "User logout successfully",
@@ -317,7 +372,7 @@ export const Update_Profile = AsyncWrapper(async (req, res, next) => {
     new: true,
     runValidators: true,
   });
-  // redisClient.set(`${UserId}`, JSON.stringify(updatedData));
+  await setCache(`user:${UserId}`, updatedData);
   return res.status(201).json({
     success: true,
     data: updatedData,
@@ -340,7 +395,7 @@ export const update_Password = AsyncWrapper(async (req, res, next) => {
     { password: hashedNewPassword },
     { new: true, runValidators: true },
   );
-  // redisClient.set(`${userId}`, JSON.stringify(passwordUpdatedUser));
+  await setCache(`user:${userId}`, passwordUpdatedUser);
   return res.status(201).json({
     success: true,
     message: "Password updated successfully",
@@ -365,7 +420,6 @@ export const Update_Avatar = AsyncWrapper(async (req, res, next) => {
       url: Url,
     };
     const updatedUser = { ...user, avatar: AvatarData };
-    // redisClient.set(`${user?._id}`, JSON.stringify(updatedUser));
     const updatedUserData: IUser | null = await userModel.findByIdAndUpdate(
       user?._id,
       updatedUser,
@@ -374,6 +428,9 @@ export const Update_Avatar = AsyncWrapper(async (req, res, next) => {
         runValidators: true,
       },
     );
+    if (updatedUserData) {
+      await setCache(`user:${user?._id}`, updatedUserData);
+    }
     return {
       userData: updatedUserData,
     };
@@ -419,11 +476,10 @@ export const Update_User_Role = AsyncWrapper(async (req, res, next) => {
     { role: userRole },
     { new: true, runValidators: true },
   );
-  console.log("user", updatedRoleUser);
   if (!updatedRoleUser) {
     return next(customError(400, "No user found against this email"));
   }
-  // redisClient.set(userId,JSON.stringify(updatedRoleUser))
+  await setCache(`user:${updatedRoleUser._id}`, updatedRoleUser);
   const users = await userModel.find({});
   return res.status(201).json({
     success: true,
@@ -435,10 +491,10 @@ export const Update_User_Role = AsyncWrapper(async (req, res, next) => {
 export const Delete_User = AsyncWrapper(async (req, res, next) => {
   const userId = req.params?.id;
   const userDeleted = await userModel.findByIdAndDelete(userId);
-  await redisClient.del(userId);
   if (!userDeleted) {
     return next(customError(400, "Failed to delete requested User"));
   }
+  await deleteCache(`user:${userId}`);
   const users = await userModel.find({});
   return res.status(200).json({
     success: true,

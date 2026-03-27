@@ -6,7 +6,7 @@ import {
   GetSingleCourseApi,
 } from "@/app/APIs/routes";
 import { ICourseData, IUser } from "@/app/types/apifn.types";
-import { Rate, Button, Spin, Collapse, message } from "antd";
+import { Rate, Button, Spin, Collapse, message, Modal } from "antd";
 import {
   FaPlay,
   FaCheck,
@@ -30,19 +30,18 @@ const CourseDetails = ({ params }: { params: Promise<{ id: string }> }) => {
   const [course, setCourse] = useState<ICourseData | null>(null);
   const [loading, setLoading] = useState(false);
   const { user }: { user: IUser } = useSelector(
-    (state: any) => state.UserReducer
+    (state: any) => state.UserReducer,
   );
   const [isEnrolled, setisEnrolled] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
   const router = useRouter();
+  const [loginDialog, setLoginDialog] = useState(false);
 
   useEffect(() => {
     const getParams = async () => {
       const resolvedParams = await params;
-      const userData = await GetProfileData()
-      if(userData.data.success)
       setCourseId(resolvedParams.id);
-      setisEnrolled(userData.data.data.courses.includes(resolvedParams.id) || user.courses.includes(resolvedParams.id));
+      setisEnrolled(user?.courses?.includes(resolvedParams.id));
     };
     getParams();
   }, [params]);
@@ -65,9 +64,7 @@ const CourseDetails = ({ params }: { params: Promise<{ id: string }> }) => {
   }, [courseId]);
 
   if (loading) {
-    return (
-      <InitialPageloader />
-    );
+    return <InitialPageloader />;
   }
 
   if (!course) {
@@ -83,13 +80,18 @@ const CourseDetails = ({ params }: { params: Promise<{ id: string }> }) => {
   const discountPercentage =
     course.estimatedPrice > 0
       ? Math.round(
-          ((course.estimatedPrice - course.price) / course.estimatedPrice) * 100
+          ((course.estimatedPrice - course.price) / course.estimatedPrice) *
+            100,
         )
       : 0;
 
   const handlePurchase = async () => {
     try {
       setLoading(true);
+      if (!user?._id) {
+        setLoginDialog(true);
+        return;
+      }
       const res = await CreateCheckoutSessionApi({
         courseId: courseId,
         userEmail: user?.email,
@@ -101,7 +103,7 @@ const CourseDetails = ({ params }: { params: Promise<{ id: string }> }) => {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         return messageApi.error(
-          error.response?.data?.message || "Failed to create Checkout Session"
+          error.response?.data?.message || "Failed to create Checkout Session",
         );
       }
     } finally {
@@ -273,7 +275,7 @@ const CourseDetails = ({ params }: { params: Promise<{ id: string }> }) => {
                     size="large"
                     block
                     className="w-full border-none mb-4 mt-2"
-                    onClick={()=>router.push(`/course-access/${courseId}`)}
+                    onClick={() => router.push(`/course-access/${courseId}`)}
                   >
                     Get Into Course
                   </Button>
@@ -285,7 +287,6 @@ const CourseDetails = ({ params }: { params: Promise<{ id: string }> }) => {
                     className="w-full border-none mb-4"
                     onClick={handlePurchase}
                     loading={loading}
-
                   >
                     Buy Now
                   </Button>
@@ -328,6 +329,32 @@ const CourseDetails = ({ params }: { params: Promise<{ id: string }> }) => {
           </div>
         )}
       </div>
+      <Modal
+        title={
+          <div className="text-center text-title">
+            Login <span className="text-accent">Required</span>
+          </div>
+        }
+        open={loginDialog}
+        closeIcon
+        onCancel={() => setLoginDialog(false)}
+        footer={null}
+      >
+        <div className="text-center mb-4">
+          Please login first before buying course
+        </div>
+        <div className="w-full flex justify-end gap-x-2">
+          <Button
+            variant="outlined"
+            onClick={() => setLoginDialog(false)}
+          >
+            Cancel
+          </Button>
+          <Button variant="filled" type="primary"  onClick={()=>router.push('/login')}>
+            Login
+          </Button>
+        </div>
+      </Modal>
     </div>
   );
 };

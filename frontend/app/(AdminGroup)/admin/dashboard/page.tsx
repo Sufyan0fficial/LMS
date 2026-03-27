@@ -5,11 +5,26 @@ import {
   GetOrdersAnalyticsApi,
   GetUsersAnalyticsApi,
 } from "@/app/APIs/routes";
-import { message, Table, TableProps, Tooltip, Button, Empty, Card, Statistic } from "antd";
+import {
+  message,
+  Table,
+  TableProps,
+  Tooltip,
+  Button,
+  Empty,
+  Card,
+  Statistic,
+} from "antd";
 import axios from "axios";
 import TimeAgo from "javascript-time-ago";
 import React, { useEffect, useState } from "react";
-import { MdOutlineMailOutline, MdOutlineSell, MdRefresh, MdTrendingUp, MdTrendingDown } from "react-icons/md";
+import {
+  MdOutlineMailOutline,
+  MdOutlineSell,
+  MdRefresh,
+  MdTrendingUp,
+  MdTrendingDown,
+} from "react-icons/md";
 import ReactTimeAgo from "react-time-ago";
 import {
   Area,
@@ -27,6 +42,7 @@ import ru from "javascript-time-ago/locale/ru";
 import { FaUsers, FaDollarSign, FaChartLine } from "react-icons/fa6";
 import { IoStatsChart } from "react-icons/io5";
 import InitialPageloader from "@/app/components/initialPageloader";
+import { useRouter } from "next/navigation";
 
 try {
   TimeAgo.addDefaultLocale(en);
@@ -60,6 +76,7 @@ const Dashboard = () => {
   const [ordersError, setOrdersError] = useState(false);
   const [transactionsError, setTransactionsError] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
+  const router = useRouter()
 
   const fetchDashboardData = async () => {
     try {
@@ -76,11 +93,11 @@ const Dashboard = () => {
       ]);
 
       // Handle Users Analytics
-      if (usersRes.status === 'fulfilled' && usersRes.value.data.success) {
+      if (usersRes.status === "fulfilled" && usersRes.value.data.success) {
         setUsersAnalytics(usersRes.value.data.data);
         const users = usersRes.value.data.data.reduce(
           (acc: number, current: AnalyticsData) => acc + current.count,
-          0
+          0,
         );
         setTotalUsers(users);
       } else {
@@ -89,11 +106,14 @@ const Dashboard = () => {
       }
 
       // Handle Orders Analytics
-      if (ordersAnaRes.status === 'fulfilled' && ordersAnaRes.value.data.success) {
+      if (
+        ordersAnaRes.status === "fulfilled" &&
+        ordersAnaRes.value.data.success
+      ) {
         setOrdersAnalytics(ordersAnaRes.value.data.data);
         const orders = ordersAnaRes.value.data.data.reduce(
           (acc: number, current: AnalyticsData) => acc + current.count,
-          0
+          0,
         );
         setTotalOrders(orders);
       } else {
@@ -102,32 +122,32 @@ const Dashboard = () => {
       }
 
       // Handle Recent Transactions
-      if (ordersRes.status === 'fulfilled' && ordersRes.value.data.success) {
+      if (ordersRes.status === "fulfilled" && ordersRes.value.data.success) {
         const data = ordersRes.value.data.data.map((item: any, i: number) => ({
           key: i,
-          name: item?.userId?.name || 'N/A',
-          email: item?.userId?.email || 'N/A',
-          price: item?.courseId?.price || '0',
-          CourseName: item?.courseId?.name || 'N/A',
+          name: item?.userId?.name || "N/A",
+          email: item?.userId?.email || "N/A",
+          price: item?.courseId?.price || "0",
+          CourseName: item?.courseId?.name || "N/A",
           createdAt: item?.createdAt,
           _id: item._id,
         }));
         setRowData(data);
-        
+
         // Calculate total revenue
-        const revenue = data.reduce((sum: number, item: DataType) => 
-          sum + (parseFloat(item.price) || 0), 0
+        const revenue = data.reduce(
+          (sum: number, item: DataType) => sum + (parseFloat(item.price) || 0),
+          0,
         );
         setTotalRevenue(revenue);
       } else {
         setTransactionsError(true);
         setRowData([]);
       }
-
     } catch (error) {
       if (axios.isAxiosError(error)) {
         messageApi.error(
-          error.response?.data?.message || "Failed to load dashboard data"
+          error.response?.data?.message || "Failed to load dashboard data",
         );
       }
     } finally {
@@ -163,9 +183,7 @@ const Dashboard = () => {
       key: "CourseName",
       render: (text) => (
         <Tooltip title={text}>
-          <div className="max-w-36 line-clamp-2 text-sm">
-            {text}
-          </div>
+          <div className="max-w-36 line-clamp-2 text-sm">{text}</div>
         </Tooltip>
       ),
     },
@@ -175,7 +193,7 @@ const Dashboard = () => {
       key: "price",
       render: (price) => (
         <span className="font-semibold text-success">
-          ${price === '0' ? 'Free' : price}
+          ${price === "0" ? "Free" : price}
         </span>
       ),
     },
@@ -185,9 +203,7 @@ const Dashboard = () => {
       key: "createdAt",
       render: (date) => (
         <div>
-          <div className="text-sm">
-            {new Date(date).toLocaleDateString()}
-          </div>
+          <div className="text-sm">{new Date(date).toLocaleDateString()}</div>
           <div className="text-xs text-muted-light dark:text-muted-dark">
             <ReactTimeAgo date={date} locale="en-US" />
           </div>
@@ -213,13 +229,13 @@ const Dashboard = () => {
     },
   ];
 
-  const StatCard = ({ 
-    title, 
-    value, 
-    icon, 
-    color, 
-    trend, 
-    loading: cardLoading 
+  const StatCard = ({
+    title,
+    value,
+    icon,
+    color,
+    trend,
+    loading: cardLoading,
   }: {
     title: string;
     value: string | number;
@@ -231,27 +247,37 @@ const Dashboard = () => {
     <Card className="border border-border-light dark:border-border-dark">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm text-muted-light dark:text-muted-dark mb-1">{title}</p>
+          <p className="text-sm text-muted-light dark:text-muted-dark mb-1">
+            {title}
+          </p>
           <p className={`text-2xl font-bold ${color}`}>
-            {cardLoading ? '...' : value}
+            {cardLoading ? "..." : value}
           </p>
           {trend && (
-            <div className={`flex items-center gap-1 text-xs mt-1 ${
-              trend.isPositive ? 'text-success' : 'text-error'
-            }`}>
+            <div
+              className={`flex items-center gap-1 text-xs mt-1 ${
+                trend.isPositive ? "text-success" : "text-error"
+              }`}
+            >
               {trend.isPositive ? <MdTrendingUp /> : <MdTrendingDown />}
               {trend.value}% from last month
             </div>
           )}
         </div>
-        <div className={`p-3 rounded-full ${color.replace('text-', 'bg-')}/10`}>
+        <div className={`p-3 rounded-full ${color.replace("text-", "bg-")}/10`}>
           {icon}
         </div>
       </div>
     </Card>
   );
 
-  const ChartErrorFallback = ({ title, onRetry }: { title: string; onRetry: () => void }) => (
+  const ChartErrorFallback = ({
+    title,
+    onRetry,
+  }: {
+    title: string;
+    onRetry: () => void;
+  }) => (
     <div className="bg-card-light dark:bg-card-dark border border-border-light dark:border-border-dark rounded-lg p-6">
       <h3 className="text-lg font-semibold text-primary-light dark:text-primary-dark mb-4">
         {title}
@@ -264,8 +290,8 @@ const Dashboard = () => {
               <p className="text-muted-light dark:text-muted-dark mb-4">
                 Unable to load chart data
               </p>
-              <Button 
-                type="primary" 
+              <Button
+                type="primary"
                 icon={<MdRefresh />}
                 onClick={onRetry}
                 className="bg-bprimary hover:bg-bprimary-hover"
@@ -286,7 +312,7 @@ const Dashboard = () => {
   return (
     <div className="space-y-6">
       {contextHolder}
-      
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -335,7 +361,7 @@ const Dashboard = () => {
         />
         <StatCard
           title="Avg. Order Value"
-          value={`$${totalOrders > 0 ? (totalRevenue / totalOrders).toFixed(2) : '0'}`}
+          value={`$${totalOrders > 0 ? (totalRevenue / totalOrders).toFixed(2) : "0"}`}
           icon={<FaChartLine size={24} />}
           color="text-info"
           trend={{ value: 3, isPositive: false }}
@@ -347,8 +373,8 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Users Analytics Chart */}
         {usersError ? (
-          <ChartErrorFallback 
-            title="Users Analytics" 
+          <ChartErrorFallback
+            title="Users Analytics"
             onRetry={fetchDashboardData}
           />
         ) : (
@@ -359,20 +385,17 @@ const Dashboard = () => {
             <ResponsiveContainer width="100%" height={300}>
               <AreaChart data={usersAnalytics}>
                 <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-                <XAxis 
-                  dataKey="month" 
+                <XAxis
+                  dataKey="month"
                   tick={{ fontSize: 12 }}
                   stroke="currentColor"
                 />
-                <YAxis 
-                  tick={{ fontSize: 12 }}
-                  stroke="currentColor"
-                />
-                <RechartsTooltip 
+                <YAxis tick={{ fontSize: 12 }} stroke="currentColor" />
+                <RechartsTooltip
                   contentStyle={{
-                    backgroundColor: 'var(--color-card-light)',
-                    border: '1px solid var(--color-border-light)',
-                    borderRadius: '8px',
+                    backgroundColor: "var(--color-card-light)",
+                    border: "1px solid var(--color-border-light)",
+                    borderRadius: "8px",
                   }}
                 />
                 <Area
@@ -390,8 +413,8 @@ const Dashboard = () => {
 
         {/* Orders Analytics Chart */}
         {ordersError ? (
-          <ChartErrorFallback 
-            title="Orders Analytics" 
+          <ChartErrorFallback
+            title="Orders Analytics"
             onRetry={fetchDashboardData}
           />
         ) : (
@@ -402,20 +425,17 @@ const Dashboard = () => {
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={ordersAnalytics}>
                 <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-                <XAxis 
-                  dataKey="month" 
+                <XAxis
+                  dataKey="month"
                   tick={{ fontSize: 12 }}
                   stroke="currentColor"
                 />
-                <YAxis 
-                  tick={{ fontSize: 12 }}
-                  stroke="currentColor"
-                />
-                <RechartsTooltip 
+                <YAxis tick={{ fontSize: 12 }} stroke="currentColor" />
+                <RechartsTooltip
                   contentStyle={{
-                    backgroundColor: 'var(--color-card-light)',
-                    border: '1px solid var(--color-border-light)',
-                    borderRadius: '8px',
+                    backgroundColor: "var(--color-card-light)",
+                    border: "1px solid var(--color-border-light)",
+                    borderRadius: "8px",
                   }}
                 />
                 <Line
@@ -423,8 +443,8 @@ const Dashboard = () => {
                   dataKey="count"
                   stroke="#22c55e"
                   strokeWidth={3}
-                  dot={{ fill: '#22c55e', strokeWidth: 2, r: 4 }}
-                  activeDot={{ r: 6, stroke: '#22c55e', strokeWidth: 2 }}
+                  dot={{ fill: "#22c55e", strokeWidth: 2, r: 4 }}
+                  activeDot={{ r: 6, stroke: "#22c55e", strokeWidth: 2 }}
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -438,15 +458,11 @@ const Dashboard = () => {
           <h3 className="text-lg font-semibold text-primary-light dark:text-primary-dark">
             Recent Transactions
           </h3>
-          <Button 
-            type="link" 
-            href="/admin/invoices"
-            className="text-bprimary"
-          >
+          <Button type="link" className="text-bprimary" onClick={()=>router.push('/admin/invoices')}>
             View All
           </Button>
         </div>
-        
+
         {transactionsError ? (
           <div className="flex flex-col items-center justify-center py-12">
             <Empty
@@ -456,8 +472,8 @@ const Dashboard = () => {
                   <p className="text-muted-light dark:text-muted-dark mb-4">
                     Unable to load transactions
                   </p>
-                  <Button 
-                    type="primary" 
+                  <Button
+                    type="primary"
                     icon={<MdRefresh />}
                     onClick={fetchDashboardData}
                     className="bg-bprimary hover:bg-bprimary-hover"

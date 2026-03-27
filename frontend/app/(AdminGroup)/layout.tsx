@@ -41,6 +41,7 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
   const [collapsed, setCollapsed] = useState(false);
   const [selectedKey, setselectedKey] = useState("dashboard");
   console.log('selected key is',selectedKey)
+  const {user} = useSelector((state:any)=>state.UserReducer)
   const router = useRouter()
   function getItem(
     label: React.ReactNode,
@@ -100,6 +101,11 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
     setselectedKey(key);
     router.push(`/admin/${key}`)
   };
+
+  if(user?.role !== 'admin'){
+    return router.replace('/')
+    
+  }
 
   return (
     <div className="min-h-screen flex max-h-screen max-w-screen">
