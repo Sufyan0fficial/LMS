@@ -8,6 +8,7 @@ import { getCache, setCache } from "../Utils/redis.cache.js";
 
 export const Verify_User = AsyncWrapper(async (req, res, next) => {
   const cookie = req.cookies?.access_token;
+console.log('middlware tokens',cookie,req.cookies?.refresh_token)
   if (!cookie) {
     return next(customError(401, "Cookie Expired !"));
   }
