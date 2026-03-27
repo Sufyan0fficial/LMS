@@ -2,7 +2,6 @@ import { AsyncWrapper } from "../MiddleWare/AsyncWrapper.js";
 import cloudinary from "cloudinary";
 import { LayoutModel } from "../Model/layout.model.js";
 import { customError } from "../Utils/customError.js";
-import { deleteCache, setCache, getCache } from "../Utils/redis.cache.js";
 
 export const Create_Layout = AsyncWrapper(async (req, res, next) => {
   const { type } = req.body;
@@ -34,7 +33,6 @@ export const Create_Layout = AsyncWrapper(async (req, res, next) => {
     const { category } = req.body;
     data = await LayoutModel.create({ type: "category", category });
   }
-  await deleteCache(`layout:${type}`);
   return res.status(200).json({
     success: true,
     message: "Layout Created Successfully",
@@ -107,7 +105,6 @@ export const Update_Layout = AsyncWrapper(async (req, res, next) => {
       { new: true, runValidators: true }
     );
   }
-  await deleteCache(`layout:${type}`);
   return res.status(201).json({
     success:true,
     message:'Layout Updated successfully',
@@ -117,18 +114,10 @@ export const Update_Layout = AsyncWrapper(async (req, res, next) => {
 
 export const Get_LayoutBy_Type = AsyncWrapper(async(req,res,next)=>{
     const {type} = req.body
-    const cached = await getCache(`layout:${type}`);
-    if (cached) {
-      return res.status(200).json({
-        success: true,
-        data: cached,
-      });
-    }
     const Layout = await LayoutModel.findOne({type})
     if(!Layout){
         return next(customError(400,'Failed to get Layout'))
     }
-    await setCache(`layout:${type}`, Layout);
     return res.status(200).json({
         success:true,
         data:Layout

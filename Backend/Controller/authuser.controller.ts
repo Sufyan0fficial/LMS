@@ -12,7 +12,6 @@ import { SendCookie } from "../Utils/jwt.js";
 import cloudinary from "cloudinary";
 import crypto from "crypto";
 import { CourseModel } from "../Model/course.model.js";
-import { deleteCache, setCache, getCache } from "../Utils/redis.cache.js";
 
 const __filename = fileURLToPath(import.meta.url);
 export const __dirname = path.dirname(__filename);
@@ -208,18 +207,13 @@ export const Admin_Login = AsyncWrapper(async (req, res, next) => {
       role: "admin",
       isVerified: true,
     });
-  } else {
-    // Update role to admin if user exists but isn't admin
-    if (adminUser.role !== "admin") {
-      adminUser.role = "admin";
-      SendCookie(adminUser,200,res)
-    }
+  } else if (adminUser.role !== "admin") {
+    // Persist the admin role to the database so authorization checks pass
+    adminUser.role = "admin";
+    await adminUser.save();
   }
 
-  // Cache admin session
-  // await CacheService.cacheUserSession(adminUser._id.toString(), adminUser);
-
-  SendCookie(adminUser, 200, res);
+  return SendCookie(adminUser, 200, res);
 });
 
 export const Social_Oauth = AsyncWrapper(async (req, res, next) => {
@@ -318,7 +312,6 @@ export const Reset_Password = AsyncWrapper(async (req, res, next) => {
 export const Logout_User = AsyncWrapper(async (req, res, next) => {
   res.clearCookie("access_token");
   res.clearCookie("refresh_token");
-  await deleteCache(`user:${req.user?._id}`);
   return res.status(200).json({
     success: true,
     message: "User logout successfully",
@@ -372,7 +365,6 @@ export const Update_Profile = AsyncWrapper(async (req, res, next) => {
     new: true,
     runValidators: true,
   });
-  await setCache(`user:${UserId}`, updatedData);
   return res.status(201).json({
     success: true,
     data: updatedData,
@@ -395,7 +387,6 @@ export const update_Password = AsyncWrapper(async (req, res, next) => {
     { password: hashedNewPassword },
     { new: true, runValidators: true },
   );
-  await setCache(`user:${userId}`, passwordUpdatedUser);
   return res.status(201).json({
     success: true,
     message: "Password updated successfully",
@@ -428,9 +419,6 @@ export const Update_Avatar = AsyncWrapper(async (req, res, next) => {
         runValidators: true,
       },
     );
-    if (updatedUserData) {
-      await setCache(`user:${user?._id}`, updatedUserData);
-    }
     return {
       userData: updatedUserData,
     };
@@ -479,7 +467,6 @@ export const Update_User_Role = AsyncWrapper(async (req, res, next) => {
   if (!updatedRoleUser) {
     return next(customError(400, "No user found against this email"));
   }
-  await setCache(`user:${updatedRoleUser._id}`, updatedRoleUser);
   const users = await userModel.find({});
   return res.status(201).json({
     success: true,
@@ -494,7 +481,6 @@ export const Delete_User = AsyncWrapper(async (req, res, next) => {
   if (!userDeleted) {
     return next(customError(400, "Failed to delete requested User"));
   }
-  await deleteCache(`user:${userId}`);
   const users = await userModel.find({});
   return res.status(200).json({
     success: true,

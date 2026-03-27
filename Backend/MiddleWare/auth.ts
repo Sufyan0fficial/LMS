@@ -4,10 +4,10 @@ import jwt from "jsonwebtoken";
 import type { NextFunction } from "express";
 import type { Request, Response } from "express";
 import { userModel } from "../Model/user.model.js";
-import { getCache, setCache } from "../Utils/redis.cache.js";
 
 export const Verify_User = AsyncWrapper(async (req, res, next) => {
   const cookie = req.cookies?.access_token;
+console.log('middlware tokens',cookie,req.cookies?.refresh_token)
   if (!cookie) {
     return next(customError(401, "Cookie Expired !"));
   }
@@ -18,14 +18,7 @@ export const Verify_User = AsyncWrapper(async (req, res, next) => {
     return next(customError(401, "Session Expired !"));
   }
   
-  let userData = await getCache(`user:${user.id}`);
-  if (!userData) {
-    userData = await userModel.findById(user.id);
-    if (userData) {
-      await setCache(`user:${user.id}`, userData);
-    }
-  }
-  
+  const userData = await userModel.findById(user.id);
   if (!userData?._id) {
     return next(customError(401, "User does not exist !"));
   }

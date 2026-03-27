@@ -1,7 +1,6 @@
 import { AsyncWrapper } from "../MiddleWare/AsyncWrapper.js";
 import { NotificationModel } from "../Model/notification.model.js";
 import { customError } from "../Utils/customError.js";
-import { deleteCache, setCache, getCache } from "../Utils/redis.cache.js";
 import cron from "node-cron";
 
 export const Get_Notifications = AsyncWrapper(async (req, res, next) => {

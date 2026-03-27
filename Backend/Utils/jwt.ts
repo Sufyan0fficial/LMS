@@ -1,7 +1,6 @@
 import { CookieOptions, Response } from "express";
 import type { IUser } from "../Model/user.model.js";
 import jwt, { Secret } from 'jsonwebtoken'
-import { setCache } from "../Utils/redis.cache.js";
 import dotenv from 'dotenv'
 dotenv.config()
 
@@ -12,23 +11,22 @@ export const SendCookie = async (user:IUser,statusCode:number,res:Response, flag
     const accessTokenExpires = parseInt(process.env.ACCESS_TOKEN_EXPIRES as string ,10) * 60 *  1000
     const refreshTokenExpires = parseInt(process.env.REFRESH_TOKEN_EXPIRES as string ,10) * 24 * 60 * 60 * 1000
 
-    if(!flag){
-        await setCache(`user:${user._id}`, user)
-    }
+    // In production (HTTPS, possibly cross-site) cookies must be SameSite=None; Secure.
+    // In development over plain HTTP (frontend and backend on the same host, different ports => same-site)
+    // use SameSite=Lax without Secure so browsers actually store and send the cookies.
+    const isProduction = process.env.NODE_ENV === 'production'
 
     const accessTokenOptions:CookieOptions = {
         maxAge : accessTokenExpires,
         httpOnly : true,
-        // secure:process.env.NODE_ENV === 'production',
-        secure:true,
-        sameSite:'none'
+        secure: isProduction,
+        sameSite: isProduction ? 'none' : 'lax'
     }
     const refreshTokenOptions:CookieOptions = {
         maxAge : refreshTokenExpires,
         httpOnly : true,
-        // secure:process.env.NODE_ENV === 'production',
-        secure:true ,
-        sameSite:'none'
+        secure: isProduction,
+        sameSite: isProduction ? 'none' : 'lax'
     }
 
     res.cookie('access_token',access_Token,accessTokenOptions)

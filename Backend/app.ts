@@ -17,7 +17,7 @@ import dotenv from 'dotenv'
 
 
     app.use(cors({
-        origin: [`${process.env.FRONTEND_URL}`,'https://elearning-cwmb.onrender.com','https://zuporashop.online','https://www.zuporashop.online'],
+        origin: [`${process.env.FRONTEND_URL}`,'https://elearning-cwmb.onrender.com','https://zuporashop.online','https://www.zuporashop.online','http://localhost:3001'],
         credentials:true    
     }))
 
