@@ -6,7 +6,7 @@ interface DataFormat {
 }
 
 export const last12MothsData = async <T>(
-  model: Model<T>
+  model: Model<T>,
 ): Promise<DataFormat[]> => {
   try {
     const startingDate = new Date();
@@ -35,26 +35,26 @@ export const last12MothsData = async <T>(
         },
       },
     ]);
-    const monthData : DataFormat[] = []
-    for(let i=11; i>=0; i--){
-        const now = new Date()
-        now.setMonth(now.getMonth() - i)
-        const year = now.getFullYear()
-        const month = now.getMonth() + 1
-        const found = data.length > 0 && data.find(d=>d._id.year === year && d._id.month === month)
-        monthData.push({
-            month:now.toLocaleString("default",{year:'numeric',month:'short'}),
-            count: found ? found?.count : 0
-        })
-
-
-
-        
+    const monthData: DataFormat[] = [];
+    for (let i = 11; i >= 0; i--) {
+      const now = new Date();
+      now.setMonth(now.getMonth() - i);
+      const year = now.getFullYear();
+      const month = now.getMonth() + 1;
+      const found =
+        data.length > 0 &&
+        data.find((d) => d._id.year === year && d._id.month === month);
+      monthData.push({
+        month: now.toLocaleString("default", {
+          year: "numeric",
+          month: "short",
+        }),
+        count: found ? found?.count : 0,
+      });
     }
-    return monthData
-
-  } catch(error) {
+    return monthData;
+  } catch (error) {
     console.log("Failed to calculate last 12 months data", error);
-    return []
+    return [];
   }
 };

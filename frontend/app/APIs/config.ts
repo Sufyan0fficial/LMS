@@ -32,7 +32,7 @@ axiosInstance.interceptors.response.use(
         }
       }
       if (error.status === 403) {
-        // window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname)}`
+        window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname)}`
       }
     }
     return Promise.reject(error);

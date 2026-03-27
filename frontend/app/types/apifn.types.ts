@@ -116,7 +116,7 @@ export interface IResendCodePayload {
 export interface IResendCodeResponse extends IGenericApiResponse {
   authToken: string;
 }
-
+``
 //Login User
 
 export interface IloginUserPayload {

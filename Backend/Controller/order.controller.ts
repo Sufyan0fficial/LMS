@@ -3,7 +3,7 @@ import { CourseModel } from "../Model/course.model.js";
 import { NotificationModel } from "../Model/notification.model.js";
 import { OrderModel } from "../Model/order.model.js";
 import { userModel } from "../Model/user.model.js";
-import { redisClient } from "../Redis/init.redis.js";
+import { deleteCache, setCache, getCache } from "../Utils/redis.cache.js";
 import { customError } from "../Utils/customError.js";
 import { sendMail } from "../Utils/sendActivationEmail.js";
 import { __dirname } from "./authuser.controller.js";
@@ -64,7 +64,8 @@ export const Create_Order = AsyncWrapper(async (req, res, next) => {
       runValidators: true,
     }
   );
-  // await redisClient.set(user?._id, JSON.stringify(UserData));
+  await setCache(`user:${user._id}`, UserData);
+  await deleteCache('courses:all', `course:${courseId}`, 'orders:all');
   await NotificationModel.create({
     userId: user?._id,
     title: "New Order",
@@ -78,7 +79,7 @@ export const Create_Order = AsyncWrapper(async (req, res, next) => {
       orderId: `ORD-${Order?._id.toString().slice(0, 7)}`,
       amount: CourseDetail?.price,
       purchaseDate: new Date(),
-      dashboardUrl: "https://google.com",
+      dashboardUrl: `${process.env.FRONTEND_URL}/course-access/${courseId}`,
       paymentMethod: "credit Card",
     }
   );
@@ -96,9 +97,17 @@ export const Create_Order = AsyncWrapper(async (req, res, next) => {
 });
 
 export const Get_All_Orders = AsyncWrapper(async (req, res, next) => {
+  const cached = await getCache('orders:all');
+  if (cached) {
+    return res.status(200).json({
+      success: true,
+      data: cached,
+    });
+  }
   const orders = await OrderModel.find().sort({ createdAt: -1 })
   .populate('userId','name email')
   .populate('courseId', 'price name')
+  await setCache('orders:all', orders);
   return res.status(200).json({
     success: true,
     data: orders,

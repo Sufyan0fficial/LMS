@@ -24,7 +24,7 @@ const Success = () => {
   }, [searchParams]);
 
   const handleGoToCourses = () => {
-    router.replace("/");
+    router.replace("/profile?");
   };
 
   const handleRetry = () => {

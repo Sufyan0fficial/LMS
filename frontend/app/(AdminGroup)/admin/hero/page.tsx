@@ -10,9 +10,9 @@ import { MdUpload } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 
 const Hero = () => {
-  const reduxStoredHero = useSelector((state:any)=>state.LayoutReducer.hero)
+  const reduxStoredHero = useSelector((state: any) => state.LayoutReducer.hero)
   const [bannerImage, setBannerImage] = useState(reduxStoredHero?.image || '');
-  console.log('banner image is',bannerImage)
+  console.log('banner image is', bannerImage)
   const [base64ImageUrl, setbase64ImageUrl] = useState("");
   console.log("image", bannerImage, "BASE64", base64ImageUrl);
   const [loading, setloading] = useState(false);
@@ -21,18 +21,18 @@ const Hero = () => {
     title: reduxStoredHero?.title || '',
     subtitle: reduxStoredHero?.subtitle || '',
   });
-  console.log('hero section payload',heroSectionPayload)
+  console.log('hero section payload', heroSectionPayload)
   const [TitleErrorMessage, setTitleErrorMessage] = useState("");
   const [SubtitleErrorMessage, setSubtitleErrorMessage] = useState("");
   const [messageApi, contextHolder] = message.useMessage();
   const [heroAlreadyCreated, setHeroAlreadyCreated] = useState(false)
   const dispatch = useDispatch()
 
-  useEffect(()=>{
-    if(reduxStoredHero?.image &&  reduxStoredHero?.image &&reduxStoredHero?.image){
+  useEffect(() => {
+    if (reduxStoredHero?.image) {
       setHeroAlreadyCreated(true)
     }
-  },[])
+  }, [])
 
   // useEffect(()=>{
   //   const fetchHeroData = async()=>{
@@ -85,7 +85,7 @@ const Hero = () => {
     reader.onloadend = () => {
       const base64Image = reader.result;
       setbase64ImageUrl(base64Image as any);
-      setHeroSectionPayload(pre=>({...pre,image:base64Image as any}))
+      setHeroSectionPayload(pre => ({ ...pre, image: base64Image as any }))
     };
     reader.readAsDataURL(file as any);
   };
@@ -104,28 +104,31 @@ const Hero = () => {
     try {
       setloading(true);
       let res;
-      heroAlreadyCreated ? 
+      heroAlreadyCreated ?
 
-      res = await UpdateLayoutApi({
-        type: "banner",
-        banner: heroSectionPayload,
-      })
-      :
-      res = await CreateLayoutApi({
-        type: "banner",
-        banner: heroSectionPayload,
-      }) 
-      
+
+        res = await UpdateLayoutApi({
+          type: "banner",
+          banner: heroSectionPayload,
+        })
+
+        :
+
+        res = await CreateLayoutApi({
+          type: "banner",
+          banner: heroSectionPayload,
+        })
+
       if (res.data.success) {
         const data = res.data.data.banner
         messageApi.success("Hero Section created successfully");
-        dispatch(dispatchHeroSection({...data,image:data.image.url}))
+        dispatch(dispatchHeroSection({ ...data, image: data.image.url }))
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
         return messageApi.error(
           error.response?.data?.message ||
-            "Something went wrong, Please try again later"
+          "Something went wrong, Please try again later"
         );
       }
     } finally {
@@ -133,7 +136,7 @@ const Hero = () => {
     }
   };
 
-  
+
 
   return (
     <div className="flex flex-col gap-y-4">

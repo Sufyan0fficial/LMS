@@ -221,7 +221,6 @@ const CourseAccess = () => {
           setCurrentVideo(firstLesson.url);
           setCurrentLesson(firstLesson);
           setCurrentLessonIndex({ section: 0, lesson: 0 });
-          setCurrentLessonIndex({ section: 0, lesson: 0 });
         }
       }
     } catch (error: any) {
@@ -244,66 +243,8 @@ const CourseAccess = () => {
     sectionIndex: number,
     lessonIndex: number,
   ) => {
-    const handleLessonClick = (
-      lesson: LessonData,
-      sectionIndex: number,
-      lessonIndex: number,
-    ) => {
-      setCurrentVideo(lesson.url);
-      setCurrentLesson(lesson);
-      setCurrentLessonIndex({ section: sectionIndex, lesson: lessonIndex });
-    };
-
-    const getAllLessons = () => {
-      const allLessons: {
-        lesson: LessonData;
-        sectionIndex: number;
-        lessonIndex: number;
-      }[] = [];
-      courseContent.forEach((section, sectionIndex) => {
-        section.data.forEach((lesson, lessonIndex) => {
-          allLessons.push({ lesson, sectionIndex, lessonIndex });
-        });
-      });
-      return allLessons;
-    };
-
-    const getCurrentLessonGlobalIndex = () => {
-      const allLessons = getAllLessons();
-      return allLessons.findIndex(
-        (item) =>
-          item.sectionIndex === currentLessonIndex.section &&
-          item.lessonIndex === currentLessonIndex.lesson,
-      );
-    };
-
-    const navigateToLesson = (direction: "prev" | "next") => {
-      const allLessons = getAllLessons();
-      const currentGlobalIndex = getCurrentLessonGlobalIndex();
-
-      let newIndex;
-      if (direction === "prev") {
-        newIndex = currentGlobalIndex > 0 ? currentGlobalIndex - 1 : 0;
-      } else {
-        newIndex =
-          currentGlobalIndex < allLessons.length - 1
-            ? currentGlobalIndex + 1
-            : allLessons.length - 1;
-      }
-
-      const targetLesson = allLessons[newIndex];
-      if (targetLesson) {
-        handleLessonClick(
-          targetLesson.lesson,
-          targetLesson.sectionIndex,
-          targetLesson.lessonIndex,
-        );
-      }
-    };
-
-    const canNavigatePrev = () => getCurrentLessonGlobalIndex() > 0;
-    const canNavigateNext = () =>
-      getCurrentLessonGlobalIndex() < getAllLessons().length - 1;
+    setCurrentVideo(lesson.url);
+    setCurrentLesson(lesson);
     setCurrentLessonIndex({ section: sectionIndex, lesson: lessonIndex });
   };
 
@@ -424,8 +365,8 @@ const CourseAccess = () => {
         courseId,
       );
       message.success("Review posted successfully!");
-      socket.emit('notification')
-      
+      socket.emit("notification");
+
       setReviewText("");
       setReviewRating(0);
       fetchReviews();
@@ -453,8 +394,8 @@ const CourseAccess = () => {
         courseId,
       );
       message.success("Review updated successfully!");
-      socket.emit('notification')
-      
+      socket.emit("notification");
+
       setIsEditingReview(false);
       fetchReviews();
       fetchUserReview();
@@ -493,12 +434,16 @@ const CourseAccess = () => {
       setReviewLoading(false);
     }
   };
+  
+  if(!user?._id || !user?.courses?.includes(courseId)){
+    return router.replace('/')
+  }
 
   if (loading) {
-    return (
-      <InitialPageloader />
-    );
+    return <InitialPageloader />;
   }
+
+
 
   const collapseItems = courseContent.map((section, sectionIndex) => ({
     key: sectionIndex.toString(),
@@ -1100,10 +1045,10 @@ const CourseAccess = () => {
                     </Button>
                     <Button
                       icon={<RightOutlined />}
-                      iconPosition="end"
                       onClick={() => navigateToLesson("next")}
                       disabled={!canNavigateNext()}
                       className="flex items-center gap-2"
+                      iconPlacement="end"
                     >
                       Next Lesson
                     </Button>

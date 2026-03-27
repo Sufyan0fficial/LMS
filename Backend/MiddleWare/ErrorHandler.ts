@@ -1,4 +1,4 @@
-import { ErrorRequestHandler, NextFunction, Request, Response } from "express";
+import type { ErrorRequestHandler, NextFunction, Request, Response } from "express";
 
 export const ErrorHandler:ErrorRequestHandler = (err, req, res, next)=>{
     let message = err.message || 'Internal Server Error'

@@ -1,6 +1,7 @@
 "use client";
 
-import { CreateLayoutApi, UpdateLayoutApi } from "@/app/APIs/routes";
+import { CreateLayoutApi, GetLayoutDataApi, UpdateLayoutApi } from "@/app/APIs/routes";
+import InitialPageloader from "@/app/components/initialPageloader";
 import { dispatchCategories, dispatchFaqs } from "@/app/Redux/Layout";
 import { Button, Input, message } from "antd";
 import axios from "axios";
@@ -23,13 +24,29 @@ const Categories = () => {
   const [categoriesAlreadyCreated, setcategoriesAlreadyCreated] =
     useState(false);
   const dispatch = useDispatch();
+  const [initialloading, setInitialloading] = useState(false)
 
   useEffect(() => {
-    const firstCategoryTest = reduxStoredCategories?.[0];
-    if (firstCategoryTest.title) {
-      setcategoriesAlreadyCreated(true);
+
+    const fetchCategories = async()=>{
+      try {
+        setInitialloading(true)
+        const res = await GetLayoutDataApi({type:'category'})
+        if(res.data.success){
+          setcategoriesAlreadyCreated(true)
+          setcategoriesPayload(res.data.data.category)
+        }
+      } catch (error) {
+        if(axios.isAxiosError(error)){
+          return messageApi.error('Failed to fetch categories, Please try again')
+        }
+      }
+      finally{
+        setInitialloading(false)
+      }
     }
-  }, [reduxStoredCategories]);
+    fetchCategories()
+  }, []);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -78,6 +95,10 @@ const Categories = () => {
       setloading(false);
     }
   };
+
+  if(initialloading){
+    return <InitialPageloader />
+  }
   return (
     <div>
       {contextHolder}

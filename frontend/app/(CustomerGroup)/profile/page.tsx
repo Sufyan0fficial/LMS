@@ -91,6 +91,11 @@ const Profile = (props: Props) => {
       messageApi.error("Failed to Logout User");
     }
   };
+
+  if(!user?._id){
+    return router.replace('/')
+  }
+  
   return (
     <div className="w-full">
       {contextHolder}
@@ -101,7 +106,7 @@ const Profile = (props: Props) => {
               return  (
                 <div
                   key={item.key}
-                  className={`flex gap-3 items-center cursor-pointer px-3 md:px-6 py-2 ${
+                  className={`flex gap-3 items-center cursor-pointer px-3 md:px-6 py-2 ${(user?.role !== 'admin' && item.key === 'admin-dashboard') ? 'hidden' : 'flex'} ${
                     activeMenu === item.key ? "md:bg-accent" : ""
                   }`}
                   onClick={() => {
@@ -110,7 +115,7 @@ const Profile = (props: Props) => {
                       setshowlogoutModal(true);
                     }
                     if (item.key === "admin-dashboard") {
-                      router.push("/admin/create-courses");
+                      router.push("/admin/dashboard");
                     }
                   }}
                 >

@@ -43,6 +43,7 @@ import {
   CreateCourseApiFn,
   EditCourseApi,
   GetLayoutDataApi,
+  GetSingleCourseAdminApi,
   GetSingleCourseApi,
 } from "@/app/APIs/routes";
 import axios, { Axios } from "axios";
@@ -103,12 +104,6 @@ const CreateCourse = () => {
   const [Tags, setTags] = useState<any>([]);
   const [ThumbnailUrl, setThumbnailUrl] = useState("");
   console.log("thumbanil url", ThumbnailUrl);
-  const onFinish: FormProps<FieldType>["onFinish"] = async (values) => {
-    const data = { ...values, tags: Tags, thumbnail: base64ThumbnailUrl };
-    console.log("values are", values);
-    setInitialCourseInformation(data);
-    setCurrentStep(1);
-  };
   console.log("tags are", Tags);
   const [InputValue, setInputValue] = useState("");
   const { screenWidth } = useSelector((state: any) => state.UtilReducer);
@@ -121,7 +116,7 @@ const CreateCourse = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const [sectionDeleteDialog, setSectionDeleteDialog] = useState(false);
   const [editingSectionIndex, setEditingSectionIndex] = useState<number | null>(
-    null
+    null,
   );
   const [indexOfSectionToDelete, setIndexOfSectionToDelete] = useState(0);
   console.log("targeted delete index", indexOfSectionToDelete);
@@ -178,9 +173,11 @@ const CreateCourse = () => {
   useEffect(() => {
     const requestedCourse = async () => {
       try {
-        const res = await GetSingleCourseApi(courseToBeEdited);
+        const res = await GetSingleCourseAdminApi(courseToBeEdited);
         if (res.data.success) {
           const data = res.data.data;
+          console.log('📚 Fetched course data:', data);
+          
           // setCreateCoursePayload(data);
           setThumbnailUrl(data.thumbnail.url);
           const reader = new FileReader();
@@ -204,13 +201,30 @@ const CreateCourse = () => {
           setTags(courseInformation.tags);
           setCourseBenefits(data.benefits);
           setCoursePrereq(data.preRequisits);
-          setCourseData(data.courseData || []);
+          
+          // Ensure courseData has proper structure with all fields
+          const formattedCourseData = data.courseData?.map((section: any) => ({
+            sectionName: section.sectionName || "",
+            data: section.data?.map((content: any) => ({
+              name: content.name || "",
+              description: content.description || "",
+              url: content.url || "", // Video ID
+              videoLength: content.videoLength || 0,
+              link: content.link?.map((linkItem: any) => ({
+                title: linkItem.title || "",
+                url: linkItem.url || "",
+              })) || [{ title: "", url: "" }],
+            })) || [],
+          })) || [];
+          
+          console.log('📝 Formatted course data:', formattedCourseData);
+          setCourseData(formattedCourseData);
         }
       } catch (error) {
         if (axios.isAxiosError(error)) {
           return messageApi.error(
             error.response?.data.message ||
-              "Something went wrong, Fialed to fetch course Data"
+              "Something went wrong, Failed to fetch course Data",
           );
         }
       }
@@ -300,6 +314,13 @@ const CreateCourse = () => {
     fetchCategories();
   }, []);
 
+  const onFinish: FormProps<FieldType>["onFinish"] = async (values) => {
+    const data = { ...values, tags: Tags, thumbnail: base64ThumbnailUrl };
+    console.log("values are", values);
+    setInitialCourseInformation(data);
+    setCurrentStep(1);
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
 
@@ -372,7 +393,7 @@ const CreateCourse = () => {
   };
   const handleBenefits = (
     e: React.ChangeEvent<HTMLInputElement>,
-    i: number
+    i: number,
   ) => {
     const benefit = e.target.value;
     setCourseBenefits((pre) => {
@@ -432,7 +453,7 @@ const CreateCourse = () => {
     if (!indexOfSectionToDelete) return;
     const targetedIndex = indexOfSectionToDelete - 1;
     const filteredCourseData = CourseData.filter(
-      (item, i) => targetedIndex !== i
+      (item, i) => targetedIndex !== i,
     );
     setCourseData(filteredCourseData);
   };
@@ -443,7 +464,7 @@ const CreateCourse = () => {
     mainIndex: number,
     contentIndex?: number,
     linkIndex?: number,
-    linkField?: string
+    linkField?: string,
   ) => {
     const value = e.target.value;
     const newData = CourseData.map((item, i) => {
@@ -536,9 +557,9 @@ const CreateCourse = () => {
         if (!content.url) {
           return messageApi.warning("Course URL is requried");
         }
-        if (content.link?.length === 0) {
-          return messageApi.warning("Minimum one ourse link is required");
-        }
+        // if (content.link?.length === 0) {
+        //   return messageApi.warning("Minimum one course link is required");
+        // }
         for (const link of content.link) {
           if (!link.title) {
             return messageApi.warning("Link title is required");
@@ -586,7 +607,7 @@ const CreateCourse = () => {
       if (axios.isAxiosError(error)) {
         return messageApi.error(
           error.response?.data?.message ||
-            "Something went wrong, Please try again later"
+            "Something went wrong, Please try again later",
         );
       }
     } finally {
@@ -604,7 +625,7 @@ const CreateCourse = () => {
       if (axios.isAxiosError(error)) {
         return messageApi.error(
           error.response?.data?.message ||
-            "Something went wrong, Please try again later"
+            "Something went wrong, Please try again later",
         );
       }
     } finally {
@@ -626,7 +647,7 @@ const CreateCourse = () => {
           ]}
           responsive={false}
           current={CurrentStep}
-          onChange={handleStepChange}
+          // onChange={handleStepChange}
           // size= {screenWidth < 768 ? 'small' : 'default'}
           variant="filled"
           classNames={{ itemTitle: "lg:text-xl!" }}
@@ -833,7 +854,7 @@ const CreateCourse = () => {
                         className="cursor-pointer"
                         onClick={() =>
                           setCourseBenefits((pre) =>
-                            pre.filter((item, index) => index !== i)
+                            pre.filter((item, index) => index !== i),
                           )
                         }
                       />
@@ -872,7 +893,7 @@ const CreateCourse = () => {
                         className="cursor-pointer"
                         onClick={() =>
                           setCoursePrereq((pre) =>
-                            pre.filter((item, index) => index !== i)
+                            pre.filter((item, index) => index !== i),
                           )
                         }
                       />
@@ -977,12 +998,12 @@ const CreateCourse = () => {
                                                       ...i,
                                                       data: i.data.filter(
                                                         (k, l) =>
-                                                          l !== contentindex
+                                                          l !== contentindex,
                                                       ),
                                                     };
                                                   }
                                                   return i;
-                                                }
+                                                },
                                               );
                                               setCourseData(newData);
                                             }}
@@ -1015,7 +1036,7 @@ const CreateCourse = () => {
                                                   e,
                                                   "name",
                                                   index,
-                                                  contentindex
+                                                  contentindex,
                                                 )
                                               }
                                             />
@@ -1030,7 +1051,7 @@ const CreateCourse = () => {
                                                   e,
                                                   "url",
                                                   index,
-                                                  contentindex
+                                                  contentindex,
                                                 )
                                               }
                                               value={content.url}
@@ -1048,7 +1069,7 @@ const CreateCourse = () => {
                                                   e,
                                                   "videoLength",
                                                   index,
-                                                  contentindex
+                                                  contentindex,
                                                 )
                                               }
                                               value={content.videoLength}
@@ -1068,7 +1089,7 @@ const CreateCourse = () => {
                                                   e,
                                                   "description",
                                                   index,
-                                                  contentindex
+                                                  contentindex,
                                                 )
                                               }
                                             />
@@ -1107,7 +1128,7 @@ const CreateCourse = () => {
                                                                           data: i.data.map(
                                                                             (
                                                                               k,
-                                                                              l
+                                                                              l,
                                                                             ) => {
                                                                               if (
                                                                                 l ===
@@ -1118,23 +1139,23 @@ const CreateCourse = () => {
                                                                                   link: k.link.filter(
                                                                                     (
                                                                                       m,
-                                                                                      n
+                                                                                      n,
                                                                                     ) =>
                                                                                       n !==
-                                                                                      linkindex
+                                                                                      linkindex,
                                                                                   ),
                                                                                 };
                                                                               }
                                                                               return k;
-                                                                            }
+                                                                            },
                                                                           ),
                                                                         };
                                                                       }
                                                                       return i;
-                                                                    }
+                                                                    },
                                                                   );
                                                                 setCourseData(
-                                                                  newData
+                                                                  newData,
                                                                 );
                                                               }}
                                                             />
@@ -1156,7 +1177,7 @@ const CreateCourse = () => {
                                                                 index,
                                                                 contentindex,
                                                                 linkindex,
-                                                                "title"
+                                                                "title",
                                                               )
                                                             }
                                                           />
@@ -1175,14 +1196,14 @@ const CreateCourse = () => {
                                                                 index,
                                                                 contentindex,
                                                                 linkindex,
-                                                                "url"
+                                                                "url",
                                                               )
                                                             }
                                                           />
                                                         </div>
                                                       </div>
                                                     );
-                                                  }
+                                                  },
                                                 )}
                                             </div>
                                           </div>
@@ -1211,12 +1232,12 @@ const CreateCourse = () => {
                                                             };
                                                           }
                                                           return k;
-                                                        }
+                                                        },
                                                       ),
                                                     };
                                                   }
                                                   return i;
-                                                }
+                                                },
                                               );
                                               setCourseData(newData);
                                             }}
@@ -1315,8 +1336,7 @@ const CreateCourse = () => {
       ) : CurrentStep === 3 ? (
         <div className="w-full mb-20 lg:text-lg flex flex-col gap-y-6 text-primary-light dark:text-primary-dark">
           <div className="aspect-video">
-
-          <VideoPlayer demoUrl={createCoursePayload.demoUrl} />
+            <VideoPlayer demoUrl={createCoursePayload.demoUrl} />
           </div>
           <div className="flex gap-3 items-center">
             <div className="text-lg lg:text-xl font-bold">
@@ -1328,8 +1348,8 @@ const CreateCourse = () => {
               {createCoursePayload.price === 0
                 ? ""
                 : createCoursePayload.estimatedPrice
-                ? `${createCoursePayload.estimatedPrice}$`
-                : `${createCoursePayload.price}$`}
+                  ? `${createCoursePayload.estimatedPrice}$`
+                  : `${createCoursePayload.price}$`}
             </div>
             <div className="text-error tracking-tighter">
               {!createCoursePayload.price &&
