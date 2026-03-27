@@ -1,6 +1,7 @@
 import type { ErrorRequestHandler, NextFunction, Request, Response } from "express";
 
 export const ErrorHandler:ErrorRequestHandler = (err, req, res, next)=>{
+console.log('Error Handler original error name and message is',err.name,'message',err.message)
     let message = err.message || 'Internal Server Error'
     let statusCode = err.statusCode || 500
     if(err.name === 'TokenExpiredError'){
