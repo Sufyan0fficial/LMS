@@ -236,7 +236,7 @@ const Signup: React.FC = () => {
             </Link>
           </div>
         </Form>
-        <div className="text-body mt-4">
+        {/* <div className="text-body mt-4">
           <div>OR Join with</div>
           <div className="flex w-full justify-center items-center gap-4 mt-2">
             <FcGoogle
@@ -250,7 +250,7 @@ const Signup: React.FC = () => {
               className="cursor-pointer"
             />
           </div>
-        </div>
+        </div> */}
       </div>
       <div
         className="hidden md:w-1/2 bg-bprimary  max-h-screen md:flex items-center justify-center"
