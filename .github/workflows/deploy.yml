@@ -43,7 +43,7 @@ jobs:
             echo "🎨 Setting up Frontend..."
             cd frontend
             npm install
-            npm run dev
+            npm run build
             
             pm2 restart frontend-ui || pm2 start npm --name "frontend-ui" -- start
             
