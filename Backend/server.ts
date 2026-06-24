@@ -15,7 +15,7 @@ cloudinary.config({
 ConnectDB()
 .then(() => {
   socketServer.listen(process.env.PORT, () => {
-    console.log("Server is running on Port", process.env.PORT);
+    console.log("Server is running on Portt", process.env.PORT);
   });
 })
 .catch((error)=>{
