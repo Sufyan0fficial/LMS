@@ -35,7 +35,7 @@ jobs:
             npm install
             
             # Change 'index.js' if your backend starting file is named server.js or app.js
-            pm2 restart backend-api || pm2 start server.ts --name "backend-api"
+            pm2 restart backend-api || pm2 start "npx tsx server.ts" --name "backend-api"
             
             cd .. # Go back to the main repo folder
             
